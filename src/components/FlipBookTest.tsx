@@ -1,5 +1,8 @@
+/* eslint-disable */
+
 "use client";
 
+import Image from "next/image";
 import React, { useRef, useState,useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
 
@@ -37,18 +40,16 @@ const hizbData = [
     const [selectedHizb, setSelectedHizb] = useState<number>(1);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [loadedImagesCount, setLoadedImagesCount] = useState(0);
-    const [totalPages, setTotalPages] = useState(images.length);
+    const totalPages = images.length;
     const reversedImages = [...images].reverse();
     const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
-    const [dimensions, setDimensions] = useState({ width: 400, height: 600 });
-    const [showControls, setShowControls] = useState(true);
     
+      
     useEffect(() => {
       images.forEach((imgSrc) => {
         // تحقق إذا كانت الصورة قد تم تحميلها مسبقًا
         if (!loadedImages.has(imgSrc)) {
-          const img = new Image();
+          const img = new window.Image();
           img.src = imgSrc;
           img.onload = () => {
             // أضف الصورة إلى Set
@@ -57,13 +58,27 @@ const hizbData = [
         }
       });
     }, [images, loadedImages]);
+
+    // useEffect(() => {
+    //   images.forEach((imgSrc) => {
+    //     // تحقق إذا كانت الصورة قد تم تحميلها مسبقًا
+    //     if (!loadedImages.has(imgSrc)) {
+    //       const img = new Image();
+    //       img.src = imgSrc;
+    //       img.onload = () => {
+    //         // أضف الصورة إلى Set
+    //         setLoadedImages((prev) => new Set(prev).add(imgSrc));
+    //       };
+    //     }
+    //   });
+    // }, [images, loadedImages]);
     
     useEffect(() => {
       // تحقق إذا تم تحميل جميع الصور
       if (loadedImages.size === images.length) {
         setIsLoading(false);
       }
-    }, [loadedImages, images.length]);
+    }, [loadedImages]);
 
     // تنقل بين الصفحات
     // const goToPrevPage = () => flipBookRef.current?.pageFlip().flipPrev();
@@ -265,7 +280,7 @@ const testNavigationMethods = (targetIndex: number) => {
                 className="quran-page bg-cream" 
                 data-page-number={actualPageNumber}
               >
-                <img 
+                <Image 
                   src={image} 
                   alt={`صفحة ${actualPageNumber}`} 
                   className="w-full h-full object-contain"

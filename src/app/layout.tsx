@@ -3,6 +3,7 @@ import { Cairo } from "next/font/google";
 import "./globals.css";
 
 import Sidebar from "@/components/Sidebar";
+import Image from "next/image";
 
 const cairo = Cairo({ subsets: ["latin"] });
 
@@ -47,7 +48,7 @@ export default function RootLayout({
              
 
               <div className="flex items-center gap-4">
-                <img
+                <Image
                   src="/logo.png"
                   alt="شعار الجمعية"
                   className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600"

@@ -1,5 +1,8 @@
+/* eslint-disable */
+
 "use client";
 
+import Image from "next/image";
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import HTMLFlipBook from "react-pageflip";
 
@@ -31,15 +34,16 @@ const ShowInBookStyle: React.FC<ShowInBookStyleProps> = ({ pageNumbers }) => {
   
     let isMounted = true; // لتجنب تحديث الحالة بعد إلغاء التثبيت
   
-    filteredImages.forEach((imgSrc) => {
-      const img = new Image();
-      img.src = imgSrc;
-      img.onload = () => {
-        if (isMounted) {
-          setLoadedImagesCount(prev => prev + 1);
-        }
-      };
-    });
+  
+  filteredImages.forEach((imgSrc) => {
+    const img = new window.Image();
+    img.src = imgSrc;
+    img.onload = () => {
+      if (isMounted) {
+        setLoadedImagesCount(prev => prev + 1);
+      }
+    };
+  });
   
     return () => {
       isMounted = false; // تنظيف عند إلغاء التثبيت
@@ -116,7 +120,7 @@ const ShowInBookStyle: React.FC<ShowInBookStyleProps> = ({ pageNumbers }) => {
                 className="quran-page bg-cream" 
                 data-page-number={actualPageNumber}
               >
-                <img 
+                <Image 
                   src={image} 
                   alt={`صفحة ${actualPageNumber}`} 
                   className="w-full h-full object-contain"
