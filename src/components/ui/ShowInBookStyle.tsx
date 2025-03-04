@@ -99,36 +99,53 @@ const ShowInBookStyle: React.FC<ShowInBookStyleProps> = ({ pageNumbers }) => {
       )}
 
       <div className="flipbook-container" style={{ direction: "rtl" }}>
-        <HTMLFlipBook
-          ref={flipBookRef}
-          width={400}
-          height={600}
-          className="quran-flipbook shadow-lg"
-          showCover={true}
-          startPage={filteredImages.length - 1}
-          direction="rtl"
-          onFlip={handlePageFlip}
-          flippingTime={500}
-          usePortrait={false}
-          maxShadowOpacity={0.5}
-        >
-          {reversedFilteredImages.map((image, index) => {
-            const actualPageNumber = filteredImages.length - index;
-            return (
-              <div 
-                key={index} 
-                className="quran-page bg-cream" 
-                data-page-number={actualPageNumber}
-              >
-                <Image 
-                  src={image} 
-                  alt={`صفحة ${actualPageNumber}`} 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            );
-          })}
-        </HTMLFlipBook>
+
+      <HTMLFlipBook
+  ref={flipBookRef}
+  width={400}
+  height={600}
+  className="quran-flipbook shadow-lg"
+  showCover={true}
+  startPage={filteredImages.length - 1}
+  onFlip={handlePageFlip}
+  flippingTime={500}
+  usePortrait={false}
+  maxShadowOpacity={0.5}
+  // Additional required props with defaults:
+  style={{}}
+  size="fixed"
+  minWidth={0}
+  maxWidth={0}
+  minHeight={0}
+  maxHeight={0}
+  drawShadow={false}
+  startZIndex={0}
+  autoSize={false}
+  mobileScrollSupport={false}
+  clickEventForward={false}
+  useMouseEvents={false}
+  swipeDistance={0}
+  showPageCorners={false}
+  disableFlipByClick={false}
+>
+  {reversedFilteredImages.map((image, index) => {
+    const actualPageNumber = filteredImages.length - index;
+    return (
+      <div 
+        key={index} 
+        className="quran-page bg-cream" 
+        data-page-number={actualPageNumber}
+      >
+        <Image 
+          src={image} 
+          alt={`صفحة ${actualPageNumber}`} 
+          className="w-full h-full object-contain"
+        />
+      </div>
+    );
+  })}
+</HTMLFlipBook>
+
       </div>
 
       {/* لوحة التحكم */}
