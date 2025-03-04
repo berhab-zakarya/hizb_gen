@@ -34,7 +34,7 @@ const hizbData = [
   ];
   
   const FlipBook = () => {
-    const flipBookRef = useRef<HTMLFlipBook>(null);
+    const flipBookRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [selectedHizb, setSelectedHizb] = useState<number>(1);

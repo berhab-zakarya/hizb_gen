@@ -16,7 +16,7 @@ interface ShowInBookStyleProps {
   }
 
 const ShowInBookStyle: React.FC<ShowInBookStyleProps> = ({ pageNumbers }) => {
-  const flipBookRef = useRef<HTMLFlipBook>(null);
+  const flipBookRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
