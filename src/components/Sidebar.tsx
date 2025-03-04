@@ -1,44 +1,43 @@
 "use client";
-import { useRouter, useSearchParams } from 'next/navigation'; // استيراد useSearchParams أيضًا
-import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const Sidebar = () => {
   const router = useRouter();
-  const searchParams = useSearchParams(); // للحصول على الصفحة الحالية
-  const currentPage = searchParams.get('page') || 'flipBook'; // الصفحة الافتراضية هي flipBook
-  
+  const pathname = usePathname();
+  // For example: "/" becomes "" and "/book" becomes "book"
+  const currentPage = pathname === "/" ? "" : pathname?.substring(1);
+
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const handleNavigation = (pageName: string) => {
-    // تجنب التنقل إذا كنا بالفعل في الصفحة المطلوبة
+    // If already on the desired page, simply close the sidebar.
     if (currentPage === pageName) {
       setIsOpen(false);
       return;
     }
-    
     setIsOpen(false);
-    router.push(`/?page=${pageName}`);
+    router.push(`/${pageName}`);
   };
 
-  // إغلاق القائمة المنسدلة عند النقر خارجها
+  // Close the sidebar when clicking outside.
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.sidebar-container')) {
+      if (!target.closest(".sidebar-container")) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleOutsideClick);
-    
+    document.addEventListener("mousedown", handleOutsideClick);
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
 
   return (
     <div className="sidebar-container relative">
-      {/* زر القائمة المنسدلة */}
+      {/* Sidebar toggle button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-64 bg-gray-800 text-white p-3 rounded-lg shadow-md flex justify-between items-center"
@@ -48,15 +47,15 @@ const Sidebar = () => {
           ⬇️
         </span>
       </button>
-      {/* القائمة المنسدلة */}
+      {/* Dropdown menu */}
       {isOpen && (
         <div className="absolute w-64 mt-2 bg-gray-900 text-white rounded-lg shadow-lg overflow-hidden z-50">
           <ul className="space-y-2 p-3">
             <li>
               <button
-                onClick={() => handleNavigation("flipBook")}
+                onClick={() => handleNavigation("book")}
                 className={`w-full text-left p-3 rounded-lg transition-all duration-300 ${
-                  currentPage === "flipBook" ? "bg-gray-600" : "bg-gray-700 hover:bg-gray-600"
+                  currentPage === "book" ? "bg-gray-600" : "bg-gray-700 hover:bg-gray-600"
                 } flex items-center gap-2`}
               >
                 📜 <span>المصحف برواية ورش</span>
@@ -64,9 +63,9 @@ const Sidebar = () => {
             </li>
             <li>
               <button
-                onClick={() => handleNavigation("thumnSelector")}
+                onClick={() => handleNavigation("")}
                 className={`w-full text-left p-3 rounded-lg transition-all duration-300 ${
-                  currentPage === "thumnSelector" ? "bg-gray-600" : "bg-gray-700 hover:bg-gray-600"
+                  currentPage === "" ? "bg-gray-600" : "bg-gray-700 hover:bg-gray-600"
                 } flex items-center gap-2`}
               >
                 🎯 <span>اختيار ثمن عشوائي</span>

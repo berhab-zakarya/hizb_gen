@@ -23,7 +23,7 @@ export const hizbData = [
   ];
 
 
-  export function getHizbPages(hizbNumber) {
+  export function getHizbPages(hizbNumber:number) {
     const hizb = hizbData.find(h => h.hizb === hizbNumber);
     const nextHizb = hizbData.find(h => h.hizb === hizbNumber + 1);
 
@@ -43,7 +43,7 @@ export const hizbData = [
     return { startPage, endPage, pages };
 }
 
-export function getQuarterPages(hizbNumber, eighthNumber) {
+export function getQuarterPages(hizbNumber:number, eighthNumber:number) {
     const hizbInfo = getHizbPages(hizbNumber);
     if (!hizbInfo) {
         console.log("❌ حزب غير موجود:", hizbNumber);
