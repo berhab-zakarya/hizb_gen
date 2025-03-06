@@ -122,11 +122,11 @@ const ShowInBookStyle: React.FC<ShowInBookStyleProps> = ({ pageNumbers }) => {
   startZIndex={0}
   autoSize={false}
   mobileScrollSupport={false}
-  clickEventForward={false}
-  useMouseEvents={false}
+  clickEventForward={true}
+  useMouseEvents={true}
   swipeDistance={0}
   showPageCorners={false}
-  disableFlipByClick={false}
+  disableFlipByClick={true}
 >
   {reversedFilteredImages.map((image, index) => {
     const actualPageNumber = filteredImages.length - index;
@@ -138,6 +138,8 @@ const ShowInBookStyle: React.FC<ShowInBookStyleProps> = ({ pageNumbers }) => {
       >
         <Image 
           src={image} 
+          width={800}
+          height={1200}
           alt={`صفحة ${actualPageNumber}`} 
           className="w-full h-full object-contain"
         />

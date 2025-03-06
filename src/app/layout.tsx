@@ -50,6 +50,8 @@ export default function RootLayout({
               <div className="flex items-center gap-4">
                 <Image
                   src="/logo.png"
+                  width={100}
+                  height={50}
                   alt="شعار الجمعية"
                   className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
                 />

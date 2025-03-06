@@ -12,6 +12,7 @@
     "@radix-ui/react-label": "^2.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "critters": "^0.0.23",
     "framer-motion": "^12.4.10",
     "lucide-react": "^0.477.0",
     "next": "15.2.1",
@@ -26,9 +27,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sharp": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "sharp": "^0.33.5",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

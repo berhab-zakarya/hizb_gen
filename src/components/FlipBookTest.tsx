@@ -3,6 +3,8 @@
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
+import LazyImage from './LazyImage';
+
 
 // Define proper types for the HTMLFlipBook component and its instance
 interface PageFlip {
@@ -20,8 +22,10 @@ interface HTMLFlipBookRef {
   pageFlip: () => PageFlip;
 }
 
+
+
 const images = Array.from({ length: 604 }, (_, i) => 
-  `/images/__02.01.05.Masahif-Qira'at-Nafe_removed-${i + 1}.jpg`
+  `/images/__02.01.05.Masahif-Qira'at-Nafe_removed-${i + 1}.webp`
 );
 
 const hizbData = [
@@ -63,6 +67,10 @@ interface FlipBookProps {
   children?: React.ReactNode;
 }
 
+const VISIBLE_PAGES = 4; 
+const PRELOAD_PAGES = 2;
+const PRELOAD_WINDOW = 5; 
+
 const FlipBook = () => {
   // Use the properly typed ref
   const flipBookRef = useRef<HTMLFlipBookRef>(null);
@@ -74,7 +82,48 @@ const FlipBook = () => {
   const totalPages = images.length;
   const reversedImages = [...images].reverse();
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
-    
+  const [visibleRange, setVisibleRange] = useState<[number, number]>([0, 10]);
+  const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({});
+
+  // أضف هذه الدالة في الكومبوننت
+  const preloadImages = (currentPage: number) => {
+    const pagesToPreload = [];
+    const preloadWindow = 2;
+  
+    for (let i = -preloadWindow; i <= preloadWindow; i++) {
+      const pageToLoad = currentPage + i;
+      if (pageToLoad >= 1 && pageToLoad <= totalPages) {
+        const imgSrc = images[pageToLoad - 1];
+        if (!loadedImages.has(imgSrc)) {
+          pagesToPreload.push(imgSrc);
+        }
+      }
+    }
+  
+    pagesToPreload.forEach(src => {
+      const img = new window.Image();
+      img.onload = () => {
+        setLoadedImages(prev => new Set(prev).add(src));
+      };
+      img.src = src;
+    });
+  };
+
+// أضف هذا Effect
+useEffect(() => {
+  preloadImages(pageNumber);
+}, [pageNumber]);
+  
+  useEffect(() => {
+    const updateVisibleRange = () => {
+      const start = Math.max(0, pageNumber - PRELOAD_WINDOW);
+      const end = Math.min(totalPages - 1, pageNumber + PRELOAD_WINDOW);
+      setVisibleRange([start, end]);
+    };
+  
+    updateVisibleRange();
+  }, [pageNumber, totalPages]);
+
   useEffect(() => {
     images.forEach((imgSrc) => {
       // تحقق إذا كانت الصورة قد تم تحميلها مسبقًا
@@ -164,6 +213,18 @@ const FlipBook = () => {
       
     // Set the page number based on the ref (might be more reliable)
     setPageNumber(pageNumberFromRef);
+
+    const start = Math.max(0, currentPageFromEvent - PRELOAD_WINDOW);
+    const end = Math.min(totalPages - 1, currentPageFromEvent + PRELOAD_WINDOW);
+    setVisibleRange([start, end]);
+
+  };
+
+  const handleImageLoad = (index: number) => {
+    setLoadingStates(prev => ({
+      ...prev,
+      [index]: true
+    }));
   };
   
   // Add this debugging function to test different navigation methods
@@ -239,19 +300,7 @@ const FlipBook = () => {
   
   return (
     <div ref={containerRef} dir="rtl" className="flex flex-col items-center p-4 bg-white min-h-screen">
-      {isLoading && (
-        <div className="fixed inset-0 bg-white bg-opacity-90 flex justify-center items-center z-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-emerald-600 mx-auto"></div>
-            <p className="mt-4 text-xl text-emerald-800 font-arabic">
-              جاري تحميل المصحف الكريم...
-            </p>
-            <p className="text-gray-600 mt-2">
-              {Math.round((loadedImages.size / images.length) * 100)}% اكتمال
-            </p>
-          </div>
-        </div>
-      )}
+     
       
       <div className="flipbook-container" style={{ direction: "rtl" }}>
         {/* Use the component with the proper casting to satisfy TypeScript */}
@@ -275,33 +324,45 @@ const FlipBook = () => {
           drawShadow={false}
           startZIndex={0}
           autoSize={false}
-          mobileScrollSupport={false}
+          mobileScrollSupport={true}
           clickEventForward={false}
-          useMouseEvents={false}
+          useMouseEvents={true}
           swipeDistance={0}
           showPageCorners={false}
-          disableFlipByClick={false}
+          disableFlipByClick={true}
         >
-          {reversedImages.map((image, index) => {
-            // Calculate the actual page number (reversed)
-            const actualPageNumber = totalPages - index;
-            
-            return (
-              <div 
-                key={index} 
-                className="quran-page bg-cream" 
-                data-page-number={actualPageNumber}
-              >
-                <Image 
-                  src={image} 
-                  alt={`صفحة ${actualPageNumber}`} 
-                  className="w-full h-full object-contain"
-                  width={400}
-                  height={600}
-                />
-              </div>
-            );
-          })}
+         {reversedImages.map((image, index) => {
+  const actualPageNumber = totalPages - index;
+  const isNearCurrent = Math.abs(index - (totalPages - pageNumber)) <= VISIBLE_PAGES;
+  const shouldPreload = Math.abs(index - (totalPages - pageNumber)) <= PRELOAD_PAGES;
+  
+  if (!isNearCurrent && !shouldPreload) {
+    return (
+      <div 
+        key={index} 
+        className="quran-page bg-cream" 
+        data-page-number={actualPageNumber}
+      />
+    );
+  }
+
+  return (
+    <div 
+      key={index} 
+      className="quran-page bg-cream" 
+      data-page-number={actualPageNumber}
+    >
+      <LazyImage 
+        src={image}
+        alt={`صفحة ${actualPageNumber}`}
+        width={400}
+        height={600}
+        priority={shouldPreload}
+        onLoad={() => handleImageLoad(index)}
+      />
+    </div>
+  );
+})}
         </HTMLFlipBook>
       </div>
 
