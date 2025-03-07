@@ -5,7 +5,8 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
 import LazyImage from "./LazyImage";
 import { getQuarterPages } from "@/types/quran_hizb_pages";
-import { Book } from "lucide-react";
+import { Book, ChevronLeft, ChevronRight, Maximize, Minimize, Search, SkipBack, SkipForward, Shuffle } from "lucide-react";
+
 // Define proper types for the HTMLFlipBook component and its instance
 interface PageFlip {
   flip: (pageIndex: number) => void;
@@ -537,71 +538,126 @@ const FlipBook = () => {
       </div>
 
       {/* لوحة التحكم */}
-      <div className="control-panel mt-6 w-full bg-white p-4 rounded-lg shadow-md">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-          {/* تنقل بالأحزاب */}
-          <div className="hizb-selector">
+      <div className="control-panel mt-6 w-full max-w-3xl mx-auto bg-white p-5 rounded-xl shadow-md border border-emerald-100">
+        {/* Current Page Indicator */}
+        <div className="text-center mb-4">
+          <p className="text-xl font-semibold text-emerald-700">
+            صفحة <span className="text-2xl font-bold">{pageNumber}</span> من {totalPages}
+          </p>
+        </div>
+
+        {/* Main Controls */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {/* Navigation Buttons */}
+          <div className="flex items-center bg-gray-50 rounded-lg p-1 shadow-sm">
+            <button
+              onClick={() => goToPage(1)}
+              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+              title="الصفحة الأولى"
+            >
+              <SkipBack className="h-5 w-5" />
+            </button>
+            <button
+              onClick={goToPrevPage}
+              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+              title="الصفحة السابقة"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+            
+            <div className="mx-2 flex items-center">
+              <input
+                type="number"
+                value={pageNumber}
+                onChange={(e) => setPageNumber(Number(e.target.value))}
+                className="w-16 p-2 text-center border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                min="1"
+                max={totalPages}
+              />
+              <button
+                onClick={() => goToPage(pageNumber)}
+                className="ml-1 p-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <button
+              onClick={goToNextPage}
+              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+              title="الصفحة التالية"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => goToPage(totalPages)}
+              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+              title="الصفحة الأخيرة"
+            >
+              <SkipForward className="h-5 w-5" />
+            </button>
+          </div>
+          
+          {/* Fullscreen Toggle */}
+          <button
+            onClick={toggleFullScreen}
+            className="flex items-center gap-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all"
+          >
+            {isFullScreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            <span>{isFullScreen ? "إنهاء ملء الشاشة" : "ملء الشاشة"}</span>
+          </button>
+          
+          {/* Random Thumn Button */}
+          <button
+            onClick={() => handleRandomSelection(1, 60)}
+            className="flex items-center gap-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all"
+          >
+            <Shuffle className="h-4 w-4" />
+            <span>ثُمن عشوائي</span>
+          </button>
+        </div>
+        
+        {/* Hizb Selection */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-600 mb-1">الانتقال إلى الحزب</label>
+          <div className="relative">
             <select
               value={selectedHizb}
               onChange={(e) => goToHizb(Number(e.target.value))}
-              className="w-full p-2 border rounded bg-white"
+              className="w-full p-3 border border-gray-200 bg-white rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {hizbData.map((hizb) => (
                 <option key={hizb.hizb} value={hizb.hizb}>
-                  الحزب {hizb.hizb} - ص {hizb.startPage}
+                  الحزب {hizb.hizb} - صفحة {hizb.startPage}
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* تنقل بالصفحات */}
-          <div className="page-navigation flex items-center gap-2">
-            <input
-              type="number"
-              value={pageNumber}
-              onChange={(e) => setPageNumber(Number(e.target.value))}
-              className="border rounded p-2 text-center w-24"
-            />
-            <button
-              onClick={() => goToPage(pageNumber)}
-              className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-            >
-              انتقل للصفحة
-            </button>
-          </div>
-
-          {/* أزرار التنقل */}
-          <div className="flex gap-2 justify-center">
-            <button
-              onClick={goToPrevPage}
-              className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-            >
-              ← السابق
-            </button>
-            <button
-              onClick={goToNextPage}
-              className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-            >
-              التالي →
-            </button>
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3 text-gray-500">
+              <ChevronLeft className="h-4 w-4" />
+            </div>
           </div>
         </div>
-
-        {/* زر ملء الشاشة */}
-        <div className="mt-4 flex justify-center gap-4">
-          <button
-            onClick={toggleFullScreen}
-            className="px-6 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
-          >
-            {isFullScreen ? "الخروج من الوضع الكامل" : "ملء الشاشة"}
-          </button>
-          <button
-          onClick={(e: React.MouseEvent) => handleRandomSelection(1, 60)}
-          className="px-6 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-        >
-          اختيار ثُمن عشوائي
-        </button>
+        
+        {/* Quick Navigation - Visual Hizb Grid */}
+        <div className="mt-6">
+          <h3 className="text-sm font-medium text-gray-600 mb-2">انتقال سريع للأحزاب</h3>
+          <div className="grid grid-cols-10 gap-1">
+            {Array.from({ length: 60 }, (_, i) => i + 1).map((hizbNum) => (
+              <button
+                key={hizbNum}
+                onClick={() => goToHizb(hizbNum)}
+                className={`p-1 text-xs rounded ${
+                  selectedHizb === hizbNum
+                    ? "bg-emerald-600 text-white"
+                    : "bg-gray-100 hover:bg-emerald-100 text-gray-700"
+                }`}
+              >
+                {hizbNum}
+              </button>
+            ))}
+          </div>
         </div>
+      </div>
         {isModalOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div className="bg-white p-6 rounded-lg shadow-xl max-w-4xl w-full mx-4">
@@ -716,7 +772,7 @@ const FlipBook = () => {
   </div>
 )}
       </div>
-    </div>
+  
   );
 };
 
