@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
 
-import Sidebar from "@/components/Sidebar";
+
 import Image from "next/image";
 
 const cairo = Cairo({ subsets: ["latin"] });
@@ -36,41 +36,46 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
-        className={`text-right bg-gray-100 dark:bg-gray-900 ${cairo.className} antialiased`}
+        className={`text-right bg-[#FDF7E4] ${cairo.className} antialiased`}
       >
         <div className="flex min-h-screen">
-          {/* الشريط الجانبي */}
-
           <div className="flex-1 flex flex-col">
-            {/* الهيدر مع الشعار */}
+            {/* Header with luxurious styling */}
+            <header className="bg-gradient-to-b from-[#D4AF37] to-[#B08F26] shadow-lg py-4 px-6">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex items-center gap-6">
+                  {/* Logo container with golden border */}
+                  <div className="bg-white p-2 rounded-lg shadow-md border-2 border-[#D4AF37]">
+                    <Image
+                      src="/logo.png"
+                      width={100}
+                      height={50}
+                      alt="شعار الجمعية"
+                      className="w-16 h-16 object-contain"
+                    />
+                  </div>
 
-            <header className="bg-white dark:bg-gray-800 shadow-md py-3 px-4 flex items-center justify-between">
-             
-
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/logo.png"
-                  width={100}
-                  height={50}
-                  alt="شعار الجمعية"
-                  className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
-                />
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100 leading-tight">
-                    منصة مسار الأثمان
-                  </h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">
-                    اختيار عشوائي لأثمان القرآن برواية ورش عن نافع
-                  </p>
+                  {/* Title container */}
+                  <div className="flex-1">
+                    <h1 className="text-2xl font-bold text-white leading-tight">
+                      جمعية القيم للتربية والثقافة والعلم-مغنية
+                    </h1>
+                    <p className="text-[#FDF7E4] text-lg mt-1 leading-relaxed">
+                      برنامج المسابقات القرٱنية
+                    </p>
+                  </div>
                 </div>
               </div>
-
-              <div className="flex-none ml-2">
-                <Sidebar />
-              </div>
             </header>
-            {/* المحتوى */}
-            <main className="p-6 flex-1">{children}</main>
+
+            {/* Main content area with cream background */}
+            <main className="flex-1 p-6 bg-gradient-to-b from-[#FDF7E4] to-[#F5E6CA]">
+              <div className="max-w-7xl mx-auto">
+                <div className="bg-white rounded-xl shadow-lg border border-[#D4AF37]/20 p-6">
+                  {children}
+                </div>
+              </div>
+            </main>
           </div>
         </div>
       </body>

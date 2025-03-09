@@ -5,7 +5,20 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
 import LazyImage from "./LazyImage";
 import { getQuarterPages } from "@/types/quran_hizb_pages";
-import { Book, ChevronLeft, ChevronRight, Maximize, Minimize, Search, SkipBack, SkipForward, Shuffle } from "lucide-react";
+import {
+  Book,
+  ChevronLeft,
+  ChevronRight,
+  Maximize,
+  Minimize,
+  Search,
+  SkipBack,
+  SkipForward,
+  Shuffle,
+  X,
+} from "lucide-react";
+import { ControlPanel } from "./quran/control-panel";
+import { ThumnPanel } from "./quran/thumn-panel";
 
 // Define proper types for the HTMLFlipBook component and its instance
 interface PageFlip {
@@ -91,6 +104,489 @@ const hizbData = [
   { hizb: 60, startPage: 591 },
 ];
 
+const thumnData = [
+  { thumn: 1, startPage: 1 },
+  { thumn: 2, startPage: 4 },
+  { thumn: 3, startPage: 5 },
+  { thumn: 4, startPage: 6 },
+  { thumn: 5, startPage: 7 },
+  { thumn: 6, startPage: 8 },
+  { thumn: 7, startPage: 9 },
+  { thumn: 8, startPage: 10 },
+  { thumn: 9, startPage: 11 },
+  { thumn: 10, startPage: 13 },
+  { thumn: 11, startPage: 14 },
+  { thumn: 12, startPage: 15 },
+  { thumn: 13, startPage: 16 },
+  { thumn: 14, startPage: 18 },
+  { thumn: 15, startPage: 19 },
+  { thumn: 16, startPage: 20 },
+  { thumn: 17, startPage: 21 },
+  { thumn: 18, startPage: 23 },
+  { thumn: 19, startPage: 24 },
+  { thumn: 20, startPage: 25 },
+  { thumn: 21, startPage: 26 },
+  { thumn: 22, startPage: 28 },
+  { thumn: 23, startPage: 29 },
+  { thumn: 24, startPage: 30 },
+  { thumn: 25, startPage: 31 },
+  { thumn: 26, startPage: 32 },
+  { thumn: 27, startPage: 33 },
+  { thumn: 28, startPage: 34 },
+  { thumn: 29, startPage: 36 },
+  { thumn: 30, startPage: 37 },
+  { thumn: 31, startPage: 39 },
+  { thumn: 32, startPage: 40 },
+  { thumn: 33, startPage: 41 },
+  { thumn: 34, startPage: 43 },
+  { thumn: 35, startPage: 44 },
+  { thumn: 36, startPage: 45 },
+  { thumn: 37, startPage: 46 },
+  { thumn: 38, startPage: 47 },
+  { thumn: 39, startPage: 48 },
+  { thumn: 40, startPage: 50 },
+  { thumn: 41, startPage: 51 },
+  { thumn: 42, startPage: 52 },
+  { thumn: 43, startPage: 54 },
+  { thumn: 44, startPage: 55 },
+  { thumn: 45, startPage: 56 },
+  { thumn: 46, startPage: 58 },
+  { thumn: 47, startPage: 59 },
+  { thumn: 48, startPage: 60 },
+  { thumn: 49, startPage: 61 },
+  { thumn: 50, startPage: 63 },
+  { thumn: 51, startPage: 64 },
+  { thumn: 52, startPage: 65 },
+  { thumn: 53, startPage: 66 },
+  { thumn: 54, startPage: 68 },
+  { thumn: 55, startPage: 69 },
+  { thumn: 56, startPage: 71 },
+  { thumn: 57, startPage: 72 },
+  { thumn: 58, startPage: 73 },
+  { thumn: 59, startPage: 74 },
+  { thumn: 60, startPage: 76 },
+  { thumn: 61, startPage: 77 },
+  { thumn: 62, startPage: 78 },
+  { thumn: 63, startPage: 79 },
+  { thumn: 64, startPage: 80 },
+  { thumn: 65, startPage: 81 },
+  { thumn: 66, startPage: 83 },
+  { thumn: 67, startPage: 84 },
+  { thumn: 68, startPage: 86 },
+  { thumn: 69, startPage: 87 },
+  { thumn: 70, startPage: 88 },
+  { thumn: 71, startPage: 89 },
+  { thumn: 72, startPage: 90 },
+  { thumn: 73, startPage: 91 },
+  { thumn: 74, startPage: 93 },
+  { thumn: 75, startPage: 94 },
+  { thumn: 76, startPage: 95 },
+  { thumn: 77, startPage: 96 },
+  { thumn: 78, startPage: 98 },
+  { thumn: 79, startPage: 99 },
+  { thumn: 80, startPage: 100 },
+  { thumn: 81, startPage: 101 },
+  { thumn: 82, startPage: 103 },
+  { thumn: 83, startPage: 104 },
+  { thumn: 84, startPage: 105 },
+  { thumn: 85, startPage: 106 },
+  { thumn: 86, startPage: 107 },
+  { thumn: 87, startPage: 109 },
+  { thumn: 88, startPage: 110 },
+  { thumn: 89, startPage: 111 },
+  { thumn: 90, startPage: 113 },
+  { thumn: 91, startPage: 114 },
+  { thumn: 92, startPage: 115 },
+  { thumn: 93, startPage: 116 },
+  { thumn: 94, startPage: 117 },
+  { thumn: 95, startPage: 119 },
+  { thumn: 96, startPage: 120 },
+  { thumn: 97, startPage: 121 },
+  { thumn: 98, startPage: 122 },
+  { thumn: 99, startPage: 124 },
+  { thumn: 100, startPage: 125 },
+  { thumn: 101, startPage: 126 },
+  { thumn: 102, startPage: 127 },
+  { thumn: 103, startPage: 129 },
+  { thumn: 104, startPage: 130 },
+  { thumn: 105, startPage: 131 },
+  { thumn: 106, startPage: 133 },
+  { thumn: 107, startPage: 134 },
+  { thumn: 108, startPage: 136 },
+  { thumn: 109, startPage: 137 },
+  { thumn: 110, startPage: 138 },
+  { thumn: 111, startPage: 139 },
+  { thumn: 112, startPage: 141 },
+  { thumn: 113, startPage: 142 },
+  { thumn: 114, startPage: 143 },
+  { thumn: 115, startPage: 144 },
+  { thumn: 116, startPage: 145 },
+  { thumn: 117, startPage: 146 },
+  { thumn: 118, startPage: 147 },
+  { thumn: 119, startPage: 148 },
+  { thumn: 120, startPage: 149 },
+  { thumn: 121, startPage: 151 },
+  { thumn: 122, startPage: 152 },
+  { thumn: 123, startPage: 154 },
+  { thumn: 124, startPage: 155 },
+  { thumn: 125, startPage: 156 },
+  { thumn: 126, startPage: 157 },
+  { thumn: 127, startPage: 159 },
+  { thumn: 128, startPage: 160 },
+  { thumn: 129, startPage: 161 },
+  { thumn: 130, startPage: 163 },
+  { thumn: 131, startPage: 164 },
+  { thumn: 132, startPage: 166 },
+  { thumn: 133, startPage: 167 },
+  { thumn: 134, startPage: 168 },
+  { thumn: 135, startPage: 169 },
+  { thumn: 136, startPage: 171 },
+  { thumn: 137, startPage: 172 },
+  { thumn: 138, startPage: 173 },
+  { thumn: 139, startPage: 174 },
+  { thumn: 140, startPage: 176 },
+  { thumn: 141, startPage: 177 },
+  { thumn: 142, startPage: 178 },
+  { thumn: 143, startPage: 179 },
+  { thumn: 144, startPage: 180 },
+  { thumn: 145, startPage: 181 },
+  { thumn: 146, startPage: 183 },
+  { thumn: 147, startPage: 184 },
+  { thumn: 148, startPage: 186 },
+  { thumn: 149, startPage: 187 },
+  { thumn: 150, startPage: 188 },
+  { thumn: 151, startPage: 189 },
+  { thumn: 152, startPage: 191 },
+  { thumn: 153, startPage: 192 },
+  { thumn: 154, startPage: 193 },
+  { thumn: 155, startPage: 194 },
+  { thumn: 156, startPage: 195 },
+  { thumn: 157, startPage: 196 },
+  { thumn: 158, startPage: 198 },
+  { thumn: 159, startPage: 199 },
+  { thumn: 160, startPage: 200 },
+  { thumn: 161, startPage: 201 },
+  { thumn: 162, startPage: 203 },
+  { thumn: 163, startPage: 204 },
+  { thumn: 164, startPage: 205 },
+  { thumn: 165, startPage: 206 },
+  { thumn: 166, startPage: 208 },
+  { thumn: 167, startPage: 209 },
+  { thumn: 168, startPage: 210 },
+  { thumn: 169, startPage: 211 },
+  { thumn: 170, startPage: 213 },
+  { thumn: 171, startPage: 214 },
+  { thumn: 172, startPage: 215 },
+  { thumn: 173, startPage: 216 },
+  { thumn: 174, startPage: 218 },
+  { thumn: 175, startPage: 219 },
+  { thumn: 176, startPage: 220 },
+  { thumn: 177, startPage: 221 },
+  { thumn: 178, startPage: 223 },
+  { thumn: 179, startPage: 224 },
+  { thumn: 180, startPage: 225 },
+  { thumn: 181, startPage: 226 },
+  { thumn: 182, startPage: 227 },
+  { thumn: 183, startPage: 228 },
+  { thumn: 184, startPage: 230 },
+  { thumn: 185, startPage: 231 },
+  { thumn: 186, startPage: 232 },
+  { thumn: 187, startPage: 233 },
+  { thumn: 188, startPage: 234 },
+  { thumn: 189, startPage: 236 },
+  { thumn: 190, startPage: 237 },
+  { thumn: 191, startPage: 239 },
+  { thumn: 192, startPage: 240 },
+  { thumn: 193, startPage: 241 },
+  { thumn: 194, startPage: 243 },
+  { thumn: 195, startPage: 244 },
+  { thumn: 196, startPage: 246 },
+  { thumn: 197, startPage: 247 },
+  { thumn: 198, startPage: 248 },
+  { thumn: 199, startPage: 249 },
+  { thumn: 200, startPage: 250 }, // im  here
+  { thumn: 201, startPage: 252 },
+  { thumn: 202, startPage: 253 },
+  { thumn: 203, startPage: 254 },
+  { thumn: 204, startPage: 255 },
+  { thumn: 205, startPage: 256 },
+  { thumn: 206, startPage: 257 },
+  { thumn: 207, startPage: 259 },
+  { thumn: 208, startPage: 260 },
+  { thumn: 209, startPage: 262 },
+  { thumn: 210, startPage: 263 },
+  { thumn: 211, startPage: 264 },
+  { thumn: 212, startPage: 266 },
+  { thumn: 213, startPage: 267 },
+  { thumn: 214, startPage: 268 },
+  { thumn: 215, startPage: 270 },
+  { thumn: 216, startPage: 271 },
+  { thumn: 217, startPage: 272 },
+  { thumn: 218, startPage: 273 },
+  { thumn: 219, startPage: 274 },
+  { thumn: 220, startPage: 275 },
+  { thumn: 221, startPage: 277 },
+  { thumn: 222, startPage: 278 },
+  { thumn: 223, startPage: 279 },
+  { thumn: 224, startPage: 281 },
+  { thumn: 225, startPage: 282 },
+  { thumn: 226, startPage: 283 },
+  { thumn: 227, startPage: 284 },
+  { thumn: 228, startPage: 285 },
+  { thumn: 229, startPage: 286 },
+  { thumn: 230, startPage: 288 },
+  { thumn: 231, startPage: 289 },
+  { thumn: 232, startPage: 290 },
+  { thumn: 233, startPage: 292 },
+  { thumn: 234, startPage: 293 },
+  { thumn: 235, startPage: 295 },
+  { thumn: 236, startPage: 296 },
+  { thumn: 237, startPage: 297 },
+  { thumn: 238, startPage: 298 },
+  { thumn: 239, startPage: 299 },
+  { thumn: 240, startPage: 300 },
+  { thumn: 241, startPage: 302 },
+  { thumn: 242, startPage: 303 },
+  { thumn: 243, startPage: 304 },
+  { thumn: 244, startPage: 305 },
+  { thumn: 245, startPage: 306 },
+  { thumn: 246, startPage: 308 },
+  { thumn: 247, startPage: 309 },
+  { thumn: 248, startPage: 310 },
+  { thumn: 249, startPage: 312 },
+  { thumn: 250, startPage: 313 },
+  { thumn: 251, startPage: 315 },
+  { thumn: 252, startPage: 316 },
+  { thumn: 253, startPage: 317 },
+  { thumn: 254, startPage: 318 },
+  { thumn: 255, startPage: 319 },
+  { thumn: 256, startPage: 320 },
+  { thumn: 257, startPage: 322 },
+  { thumn: 258, startPage: 323 },
+  { thumn: 259, startPage: 324 },
+  { thumn: 260, startPage: 325 },
+  { thumn: 261, startPage: 326 },
+  { thumn: 262, startPage: 327 },
+  { thumn: 263, startPage: 329 },
+  { thumn: 264, startPage: 330 },
+  { thumn: 265, startPage: 332 },
+  { thumn: 266, startPage: 333 },
+  { thumn: 267, startPage: 334 },
+  { thumn: 268, startPage: 335 },
+  { thumn: 269, startPage: 336 },
+  { thumn: 270, startPage: 338 },
+  { thumn: 271, startPage: 339 },
+  { thumn: 272, startPage: 340 },
+  { thumn: 273, startPage: 342 },
+  { thumn: 274, startPage: 343 },
+  { thumn: 275, startPage: 344 },
+  { thumn: 276, startPage: 345 },
+  { thumn: 277, startPage: 346 },
+  { thumn: 278, startPage: 348 },
+  { thumn: 279, startPage: 349 },
+  { thumn: 280, startPage: 350 },
+  { thumn: 281, startPage: 351 },
+  { thumn: 282, startPage: 353 },
+  { thumn: 283, startPage: 354 },
+  { thumn: 284, startPage: 355 },
+  { thumn: 285, startPage: 356 },
+  { thumn: 286, startPage: 358 },
+  { thumn: 287, startPage: 359 },
+  { thumn: 288, startPage: 360 },
+  { thumn: 289, startPage: 361 },
+  { thumn: 290, startPage: 363 },
+  { thumn: 291, startPage: 364 },
+  { thumn: 292, startPage: 365 },
+  { thumn: 293, startPage: 366 },
+  { thumn: 294, startPage: 368 },
+  { thumn: 295, startPage: 369 },
+  { thumn: 296, startPage: 370 },
+  { thumn: 297, startPage: 371 },
+  { thumn: 298, startPage: 373 },
+  { thumn: 299, startPage: 374 },
+  { thumn: 300, startPage: 376 },
+  { thumn: 301, startPage: 377 },
+  { thumn: 302, startPage: 378 },
+  { thumn: 303, startPage: 379 },
+  { thumn: 304, startPage: 380 },
+  { thumn: 305, startPage: 381 },
+  { thumn: 306, startPage: 383 },
+  { thumn: 307, startPage: 384 },
+  { thumn: 308, startPage: 385 },
+  { thumn: 309, startPage: 386 },
+  { thumn: 310, startPage: 387 },
+  { thumn: 311, startPage: 388 },
+  { thumn: 312, startPage: 390 },
+  { thumn: 313, startPage: 391 },
+  { thumn: 314, startPage: 393 },
+  { thumn: 315, startPage: 394 },
+  { thumn: 316, startPage: 395 },
+  { thumn: 317, startPage: 397 },
+  { thumn: 318, startPage: 398 },
+  { thumn: 319, startPage: 399 },
+  { thumn: 320, startPage: 400 },
+  { thumn: 321, startPage: 401 },
+  { thumn: 322, startPage: 403 },
+  { thumn: 323, startPage: 405 },
+  { thumn: 324, startPage: 406 },
+  { thumn: 325, startPage: 407 },
+  { thumn: 326, startPage: 408 },
+  { thumn: 327, startPage: 410 },
+  { thumn: 328, startPage: 411 },
+  { thumn: 329, startPage: 413 },
+  { thumn: 330, startPage: 414 },
+  { thumn: 331, startPage: 415 },
+  { thumn: 332, startPage: 416 },
+  { thumn: 333, startPage: 417 },
+  { thumn: 334, startPage: 419 },
+  { thumn: 335, startPage: 420 },
+  { thumn: 336, startPage: 421 },
+  { thumn: 337, startPage: 422 },
+  { thumn: 338, startPage: 423 },
+  { thumn: 339, startPage: 424 },
+  { thumn: 340, startPage: 425 },
+  { thumn: 341, startPage: 426 },
+  { thumn: 342, startPage: 428 },
+  { thumn: 343, startPage: 429 },
+  { thumn: 344, startPage: 430 },
+  { thumn: 345, startPage: 431 },
+  { thumn: 346, startPage: 432 },
+  { thumn: 347, startPage: 433 },
+  { thumn: 348, startPage: 435 },
+  { thumn: 349, startPage: 436 },
+  { thumn: 350, startPage: 437 },
+  { thumn: 351, startPage: 439 },
+  { thumn: 352, startPage: 440 },
+  { thumn: 353, startPage: 441 },
+  { thumn: 354, startPage: 443 },
+  { thumn: 355, startPage: 444 },
+  { thumn: 356, startPage: 445 },
+  { thumn: 357, startPage: 446 },
+  { thumn: 358, startPage: 447 },
+  { thumn: 359, startPage: 449 },
+  { thumn: 360, startPage: 450 },
+  { thumn: 361, startPage: 451 },
+  { thumn: 362, startPage: 452 },
+  { thumn: 363, startPage: 454 },
+  { thumn: 364, startPage: 455 },
+  { thumn: 365, startPage: 456 },
+  { thumn: 366, startPage: 457 },
+  { thumn: 367, startPage: 459 },
+  { thumn: 368, startPage: 460 },
+  { thumn: 369, startPage: 461 },
+  { thumn: 370, startPage: 463 },
+  { thumn: 371, startPage: 464 },
+  { thumn: 372, startPage: 465 },
+  { thumn: 373, startPage: 467 },
+  { thumn: 374, startPage: 468 },
+  { thumn: 375, startPage: 469 },
+  { thumn: 376, startPage: 470 },
+  { thumn: 377, startPage: 471 },
+  { thumn: 378, startPage: 473 },
+  { thumn: 379, startPage: 474 },
+  { thumn: 380, startPage: 476 },
+  { thumn: 381, startPage: 477 },
+  { thumn: 382, startPage: 478 },
+  { thumn: 383, startPage: 479 },
+  { thumn: 384, startPage: 480 },
+  { thumn: 385, startPage: 481 },
+  { thumn: 386, startPage: 483 },
+  { thumn: 387, startPage: 484 },
+  { thumn: 388, startPage: 485 },
+  { thumn: 389, startPage: 486 },
+  { thumn: 390, startPage: 487 },
+  { thumn: 391, startPage: 488 },
+  { thumn: 392, startPage: 489 },
+  { thumn: 393, startPage: 491 },
+  { thumn: 394, startPage: 492 },
+  { thumn: 395, startPage: 494 },
+  { thumn: 396, startPage: 495 },
+  { thumn: 397, startPage: 497 },
+  { thumn: 398, startPage: 498 },
+  { thumn: 399, startPage: 499 },
+  { thumn: 400, startPage: 501 },
+  { thumn: 401, startPage: 502 },
+  { thumn: 402, startPage: 503 }, // im here  now
+  { thumn: 403, startPage: 504 },
+  { thumn: 404, startPage: 506 },
+  { thumn: 405, startPage: 507 },
+  { thumn: 406, startPage: 508 },
+  { thumn: 407, startPage: 510 },
+  { thumn: 408, startPage: 511 },
+  { thumn: 409, startPage: 513 },
+  { thumn: 410, startPage: 514 },
+  { thumn: 411, startPage: 515 },
+  { thumn: 412, startPage: 516 },
+  { thumn: 413, startPage: 517 },
+  { thumn: 414, startPage: 518 },
+  { thumn: 415, startPage: 519 },
+  { thumn: 416, startPage: 520 },
+  { thumn: 417, startPage: 521 },
+  { thumn: 418, startPage: 523 },
+  { thumn: 419, startPage: 524 },
+  { thumn: 420, startPage: 525 },
+  { thumn: 421, startPage: 526 },
+  { thumn: 422, startPage: 528 },
+  { thumn: 423, startPage: 529 },
+  { thumn: 424, startPage: 530 },
+  { thumn: 425, startPage: 531 },
+  { thumn: 426, startPage: 532 },
+  { thumn: 427, startPage: 534 },
+  { thumn: 428, startPage: 535 },
+  { thumn: 429, startPage: 536 },
+  { thumn: 430, startPage: 538 },
+  { thumn: 431, startPage: 539 },
+  { thumn: 432, startPage: 540 },
+  { thumn: 433, startPage: 541 },
+  { thumn: 434, startPage: 543 },
+  { thumn: 435, startPage: 544 },
+  { thumn: 436, startPage: 545 },
+  { thumn: 437, startPage: 547 },
+  { thumn: 438, startPage: 548 },
+  { thumn: 439, startPage: 550 },
+  { thumn: 440, startPage: 551 },
+  { thumn: 441, startPage: 552 },
+  { thumn: 442, startPage: 554 },
+  { thumn: 443, startPage: 555 },
+  { thumn: 444, startPage: 556 },
+  { thumn: 445, startPage: 557 },
+  { thumn: 446, startPage: 559 },
+  { thumn: 447, startPage: 560 },
+  { thumn: 448, startPage: 561 },
+  { thumn: 449, startPage: 562 },
+  { thumn: 450, startPage: 563 },
+  { thumn: 451, startPage: 565 },
+  { thumn: 452, startPage: 566 },
+  { thumn: 453, startPage: 567 },
+  { thumn: 454, startPage: 568 },
+  { thumn: 455, startPage: 569 },
+  { thumn: 456, startPage: 571 },
+  { thumn: 457, startPage: 572 },
+  { thumn: 458, startPage: 573 },
+  { thumn: 459, startPage: 574 },
+  { thumn: 460, startPage: 576 },
+  { thumn: 461, startPage: 577 },
+  { thumn: 462, startPage: 578 },
+  { thumn: 463, startPage: 579 },
+  { thumn: 464, startPage: 580 },
+  { thumn: 465, startPage: 581 },
+  { thumn: 466, startPage: 583 },
+  { thumn: 467, startPage: 584 },
+  { thumn: 468, startPage: 586 },
+  { thumn: 469, startPage: 587 },
+  { thumn: 470, startPage: 588 },
+  { thumn: 471, startPage: 589 },
+  { thumn: 472, startPage: 590 },
+  { thumn: 473, startPage: 591 },
+  { thumn: 474, startPage: 592 },
+  { thumn: 475, startPage: 594 },
+  { thumn: 476, startPage: 595 },
+  { thumn: 477, startPage: 596 },
+  { thumn: 478, startPage: 598 },
+  { thumn: 479, startPage: 599 },
+  { thumn: 480, startPage: 601 },
+];
+
 const athmanData = [
   { name: "الأول", page: 1 },
   { name: "الثاني", page: 6 },
@@ -126,6 +622,7 @@ const FlipBook = () => {
   // Use the properly typed ref
   const flipBookRef = useRef<HTMLFlipBookRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const bookContainerRef = useRef<HTMLDivElement>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [selectedHizb, setSelectedHizb] = useState<number>(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -139,88 +636,63 @@ const FlipBook = () => {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedThumn, setSelectedThumn] = useState<{ name: string; page: number,hizb:string } | null>(null);
+  const [selectedThumn, setSelectedThumn] = useState<{
+    name: string;
+    page: number;
+    hizb: string;
+  } | null>(null);
   const [currentThumn, setCurrentThumn] = useState<number | null>(null);
   const [showThumnImage, setShowThumnImage] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [customRange, setCustomRange] = useState({ min: 1, max: 60 });
-  
-  
-  const categories = [
-    { name: "الحزب ١-١٠", minHizb: 1, maxHizb: 10 },
-    { name: "الحزب ١١-٢٠", minHizb: 11, maxHizb: 20 },
-    { name: "الحزب ٢١-٤٠", minHizb: 21, maxHizb: 40 },
-    { name: "الحزب ٤١-٦٠", minHizb: 41, maxHizb: 60 },
-  ];
+  const [showThumnPanel, setShowThumnPanel] = useState(false);
+  const [bookSize, setBookSize] = useState({ width: 400, height: 600 });
 
+  const toggleThumnPanel = () => {
+    setShowThumnPanel(!showThumnPanel);
+  };
 
-  
-  const selectRandomThumn = useCallback(() => {
-    setIsLoading(true);
-    setShowThumnImage(false);
-    setTimeout(() => {
-      const randomHizb = Math.floor(Math.random() * 60) + 1; // اختيار حزب عشوائي من 1 إلى 60
-      const randomThumn = Math.floor(Math.random() * 8) + 1; // اختيار ثمن عشوائي من 1 إلى 8
-      const thumnNumber = (randomHizb - 1) * 8 + randomThumn;
-      // حساب رقم الثمن الكلي
-
-      // الحصول على صفحة البدء للثمن
-      const page = getQuarterPages(randomHizb, randomThumn)?.pages[0] || 1;
-
-      // تحديث الحالة
-      setSelectedThumn({
-        name: randomThumn.toString(),
-        page: page,
-        hizb:randomHizb.toString()
-      });
-      setCurrentThumn(thumnNumber);
-      console.log(`Hizb: ${randomHizb}, Thumn: ${randomThumn}, Calculated ThumnNumber: ${thumnNumber}`);
-      setIsModalOpen(true);
-      setIsLoading(false);
-    }, 700);
-  }, []);
+  const getThumnPage = (thumnNumber: number) => {
+    const thumn = thumnData.find((t) => t.thumn === thumnNumber);
+    return thumn ? thumn.startPage : 1;
+  };
 
   // دالة للانتقال إلى صفحة الثمن المختار
   const goToThumnPage = () => {
-    if (selectedThumn && selectedThumn.page) {
-      // Calculate the correct flip index
-      const flipToIndex = totalPages - selectedThumn.page;
-      console.log(`Going to page ${selectedThumn.page}, flip index: ${flipToIndex}`);
+    if (currentThumn) {
+      const thumn = thumnData.find(t => t.thumn === currentThumn);
+      if (thumn) {
+        const targetPage = thumn.startPage;
+        console.log("Going to thumn page:", targetPage);
   
-      // Update the page number state
-      setPageNumber(selectedThumn.page);
-  
-      // Try to flip using safeFlip
-      if (safeFlip(flipToIndex)) {
-        console.log('Successfully flipped to page');
-      } else {
-        console.log('Failed to flip, trying alternative method');
-        // Fallback to direct page set
-        if (flipBookRef.current) {
-          try {
-            flipBookRef.current.pageFlip().turnToPage(flipToIndex);
-          } catch (error) {
-            console.error('Failed to turn to page:', error);
+        // Calculate the correct flip index
+        const flipIndex = totalPages - targetPage;
+        
+        try {
+          if (flipBookRef.current) {
+            // Try the navigation
+            flipBookRef.current.pageFlip().turnToPage(flipIndex);
+            // Update the page number state
+            setPageNumber(targetPage);
           }
+        } catch (error) {
+          console.error("Navigation failed:", error);
         }
       }
-  
-      // Close the modal
-      setIsModalOpen(false);
-      setShowThumnImage(false);
-    } else {
-      console.error('No valid thumn page selected');
     }
   };
 
   // دالة لإنشاء اسم صورة الثمن
   const getThumnImageName = (thumnNumber: number) => {
-    return (thumnNumber ).toString().padStart(3, "0"); // تحويل الرقم إلى تنسيق ثلاثي الأرقام
+    return thumnNumber.toString().padStart(3, "0"); // تحويل الرقم إلى تنسيق ثلاثي الأرقام
   };
-   
 
   const handleCustomRangeSelect = () => {
-    if (customRange.min > 0 && customRange.max <= 60 && customRange.min <= customRange.max) {
+    if (
+      customRange.min > 0 &&
+      customRange.max <= 60 &&
+      customRange.min <= customRange.max
+    ) {
       handleRandomSelection(customRange.min, customRange.max);
     }
   };
@@ -231,24 +703,32 @@ const FlipBook = () => {
     setSelectedCategory(`${minHizb}-${maxHizb}`);
   
     setTimeout(() => {
-      const randomHizb = Math.floor(Math.random() * (maxHizb - minHizb + 1)) + minHizb;
-      const randomThumn = Math.floor(Math.random() * 8) + 1;
-      const thumnNumber = (randomHizb - 1) * 8 + randomThumn;
+      // Calculate thumn range based on hizb range
+      const minThumn = (minHizb - 1) * 8 + 1;
+      const maxThumn = maxHizb * 8;
+      
+      // Generate random thumn number within range
+      const randomThumnNumber = Math.floor(Math.random() * (maxThumn - minThumn + 1)) + minThumn;
+      
+      // Find the thumn data
+      const thumn = thumnData.find(t => t.thumn === randomThumnNumber);
+      
+      if (thumn) {
+        const hizbNumber = Math.ceil(randomThumnNumber / 8);
+        const thumnInHizb = ((randomThumnNumber - 1) % 8) + 1;
   
-      const page = getQuarterPages(randomHizb, randomThumn)?.pages[0] || 1;
-  
-      setSelectedThumn({
-        name: randomThumn.toString(),
-        page: page,
-        hizb: randomHizb.toString()
-      });
-      setCurrentThumn(thumnNumber);
-      setIsModalOpen(true);
+        setSelectedThumn({
+          name: thumnInHizb.toString(),
+          page: thumn.startPage,
+          hizb: hizbNumber.toString(),
+        });
+        setCurrentThumn(randomThumnNumber);
+        setIsModalOpen(true);
+      }
+      
       setIsLoading(false);
     }, 700);
   };
-    
-    
 
   const preloadImages = (currentPage: number) => {
     const pagesToPreload = [];
@@ -348,13 +828,118 @@ const FlipBook = () => {
   // وضع ملء الشاشة
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullScreen(true);
+      if (bookContainerRef.current?.requestFullscreen) {
+        bookContainerRef.current
+          .requestFullscreen()
+          .then(() => setIsFullScreen(true))
+          .catch((err) =>
+            console.error(
+              `Error attempting to enable fullscreen: ${err.message}`
+            )
+          );
+      }
     } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
+      if (document.exitFullscreen) {
+        document
+          .exitFullscreen()
+          .then(() => setIsFullScreen(false))
+          .catch((err) =>
+            console.error(`Error attempting to exit fullscreen: ${err.message}`)
+          );
+      }
     }
   };
+
+  useEffect(() => {
+    const updateBookSize = () => {
+      if (containerRef.current) {
+        if (isFullScreen) {
+          // FIXED APPROACH: Use explicit large dimensions for fullscreen
+          // Rather than calculating based on percentages
+
+          // Get screen dimensions for reference
+          const screenWidth = window.innerWidth;
+          const screenHeight = window.innerHeight;
+          console.log(
+            `Fullscreen dimensions - Width: ${screenWidth}, Height: ${screenHeight}`
+          );
+
+          // Force a large fixed size based on screen orientation
+          let width, height;
+
+          if (screenWidth > screenHeight) {
+            // Landscape orientation - make book wider
+            width = Math.min(600, screenWidth * 0.35); // Much larger fixed width
+            height = Math.min(800, screenHeight * 0.85); // Fixed height
+          } else {
+            // Portrait orientation
+            width = Math.min(500, screenWidth * 0.45);
+            height = Math.min(700, screenHeight * 0.75);
+          }
+
+          console.log(
+            `FORCED fullscreen book size to: {width: ${width}, height: ${height}}`
+          );
+          setBookSize({ width, height });
+
+          // Explicitly style the container
+          if (bookContainerRef.current) {
+            bookContainerRef.current.style.display = "flex";
+            bookContainerRef.current.style.justifyContent = "center";
+            bookContainerRef.current.style.alignItems = "center";
+            bookContainerRef.current.style.width = "100vw";
+            bookContainerRef.current.style.height = "100vh";
+            bookContainerRef.current.style.padding = "0";
+          }
+        } else {
+          // Normal mode sizing (unchanged)
+          const containerWidth = containerRef.current.clientWidth;
+          const containerHeight = window.innerHeight * 0.7;
+
+          const availableWidth = showThumnPanel
+            ? containerWidth * 0.7
+            : containerWidth * 0.9;
+
+          const aspectRatio = 3 / 4;
+          let width = Math.min(availableWidth / 2, 500);
+          let height = width / aspectRatio;
+
+          if (height > containerHeight) {
+            height = containerHeight;
+            width = height * aspectRatio;
+          }
+
+          console.log(`Normal book size: {width: ${width}, height: ${height}}`);
+          setBookSize({ width, height });
+        }
+      }
+    };
+
+    // Run immediately when fullscreen changes
+    updateBookSize();
+
+    // Add a timeout to ensure dimensions update after fullscreen transition
+    if (isFullScreen) {
+      const timer = setTimeout(() => {
+        console.log("Delayed fullscreen size update");
+        updateBookSize();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+
+    window.addEventListener("resize", updateBookSize);
+    return () => window.removeEventListener("resize", updateBookSize);
+  }, [isFullScreen, showThumnPanel]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullScreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   const handlePageFlip = (e: any) => {
     console.log(`handlePageFlip called with full event:`, e);
@@ -469,310 +1054,161 @@ const FlipBook = () => {
     <div
       ref={containerRef}
       dir="rtl"
-      className="flex flex-col items-center p-4 bg-white min-h-screen"
+      className="flex flex-col items-center p-4 bg-white min-h-screen relative"
     >
-      <div className="flipbook-container" style={{ direction: "rtl" }}>
-        {/* Use the component with the proper casting to satisfy TypeScript */}
-        <HTMLFlipBook
-          ref={flipBookRef as React.RefObject<any>}
-          width={400}
-          height={600}
-          className="quran-flipbook shadow-lg"
-          showCover={true}
-          startPage={images.length - 1}
-          onFlip={handlePageFlip}
-          flippingTime={500}
-          usePortrait={false}
-          maxShadowOpacity={0.5}
-          style={{}}
-          size="fixed"
-          minWidth={0}
-          maxWidth={0}
-          minHeight={0}
-          maxHeight={0}
-          drawShadow={false}
-          startZIndex={0}
-          autoSize={false}
-          mobileScrollSupport={true}
-          clickEventForward={false}
-          useMouseEvents={true}
-          swipeDistance={0}
-          showPageCorners={false}
-          disableFlipByClick={true}
-        >
-          {reversedImages.map((image, index) => {
-            const actualPageNumber = totalPages - index;
-            const isNearCurrent =
-              Math.abs(index - (totalPages - pageNumber)) <= VISIBLE_PAGES;
-            const shouldPreload =
-              Math.abs(index - (totalPages - pageNumber)) <= PRELOAD_PAGES;
+      <div className="flex w-full max-w-7xl justify-between items-start gap-4">
+        {/* Thumn Panel - Integrated directly into the layout */}
+        {showThumnPanel && (
+          <div className="thumn-panel bg-white border border-emerald-100 rounded-xl shadow-lg p-4 w-80 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-emerald-700">
+                اختيار ثُمن
+              </h3>
+              <button
+                onClick={toggleThumnPanel}
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
 
-            if (!isNearCurrent && !shouldPreload) {
+            <ThumnPanel
+              selectedThumn={selectedThumn}
+              currentThumn={currentThumn}
+              showThumnImage={showThumnImage}
+              setShowThumnImage={setShowThumnImage}
+              selectedCategory={selectedCategory}
+              customRange={customRange}
+              setCustomRange={setCustomRange}
+              handleRandomSelection={handleRandomSelection}
+              handleCustomRangeSelect={handleCustomRangeSelect}
+              goToThumnPage={goToThumnPage}
+              getThumnImageName={getThumnImageName}
+              onClose={toggleThumnPanel}
+            />
+          </div>
+        )}
+
+        <div
+          ref={bookContainerRef}
+          className={
+            isFullScreen
+              ? "fixed inset-0 z-50 bg-gray-900 flex justify-center items-center"
+              : "flipbook-container flex-grow flex justify-center items-center"
+          }
+          style={
+            isFullScreen
+              ? {
+                  width: "100vw",
+                  height: "100vh",
+                  padding: 0,
+                  margin: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }
+              : {}
+          }
+        >
+          {/* Use the component with the proper casting to satisfy TypeScript */}
+          <HTMLFlipBook
+            ref={flipBookRef as React.RefObject<any>}
+            width={bookSize.width}
+            height={bookSize.height}
+            className="quran-flipbook shadow-lg"
+            showCover={true}
+            startPage={images.length - 1}
+            onFlip={handlePageFlip}
+            flippingTime={500}
+            usePortrait={false}
+            maxShadowOpacity={0.5}
+            style={{
+              margin: 0,
+              // Add a transition for smoother size changes
+              transition: "width 0.3s, height 0.3s",
+            }}
+            size="fixed"
+            minWidth={0}
+            maxWidth={0}
+            minHeight={0}
+            maxHeight={0}
+            drawShadow={false}
+            startZIndex={0}
+            autoSize={false}
+            mobileScrollSupport={true}
+            clickEventForward={false}
+            useMouseEvents={true}
+            swipeDistance={0}
+            showPageCorners={false}
+            disableFlipByClick={true}
+          >
+            {reversedImages.map((image, index) => {
+              const actualPageNumber = totalPages - index;
+              const isNearCurrent =
+                Math.abs(index - (totalPages - pageNumber)) <= VISIBLE_PAGES;
+              const shouldPreload =
+                Math.abs(index - (totalPages - pageNumber)) <= PRELOAD_PAGES;
+
+              if (!isNearCurrent && !shouldPreload) {
+                return (
+                  <div
+                    key={index}
+                    className="quran-page bg-cream"
+                    data-page-number={actualPageNumber}
+                  />
+                );
+              }
+
               return (
                 <div
                   key={index}
                   className="quran-page bg-cream"
                   data-page-number={actualPageNumber}
-                />
+                >
+                  <LazyImage
+                    src={image}
+                    alt={`صفحة ${actualPageNumber}`}
+                    width={bookSize.width}
+                    height={bookSize.height}
+                    priority={shouldPreload}
+                    onLoad={() => handleImageLoad(index)}
+                  />
+                </div>
               );
-            }
-
-            return (
-              <div
-                key={index}
-                className="quran-page bg-cream"
-                data-page-number={actualPageNumber}
+            })}
+          </HTMLFlipBook>
+          {isFullScreen && (
+            <div className="absolute top-4 right-4 z-50">
+              <button
+                onClick={toggleFullScreen}
+                className="p-3 bg-white/80 hover:bg-white text-gray-800 rounded-full shadow-lg transition-all"
+                title="إنهاء ملء الشاشة"
               >
-                <LazyImage
-                  src={image}
-                  alt={`صفحة ${actualPageNumber}`}
-                  width={400}
-                  height={600}
-                  priority={shouldPreload}
-                  onLoad={() => handleImageLoad(index)}
-                />
-              </div>
-            );
-          })}
-        </HTMLFlipBook>
+                <Minimize className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* لوحة التحكم */}
-      <div className="control-panel mt-6 w-full max-w-3xl mx-auto bg-white p-5 rounded-xl shadow-md border border-emerald-100">
-        {/* Current Page Indicator */}
-        <div className="text-center mb-4">
-          <p className="text-xl font-semibold text-emerald-700">
-            صفحة <span className="text-2xl font-bold">{pageNumber}</span> من {totalPages}
-          </p>
-        </div>
-
-        {/* Main Controls */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-          {/* Navigation Buttons */}
-          <div className="flex items-center bg-gray-50 rounded-lg p-1 shadow-sm">
-            <button
-              onClick={() => goToPage(1)}
-              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-              title="الصفحة الأولى"
-            >
-              <SkipBack className="h-5 w-5" />
-            </button>
-            <button
-              onClick={goToPrevPage}
-              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-              title="الصفحة السابقة"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-            
-            <div className="mx-2 flex items-center">
-              <input
-                type="number"
-                value={pageNumber}
-                onChange={(e) => setPageNumber(Number(e.target.value))}
-                className="w-16 p-2 text-center border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                min="1"
-                max={totalPages}
-              />
-              <button
-                onClick={() => goToPage(pageNumber)}
-                className="ml-1 p-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-            </div>
-            
-            <button
-              onClick={goToNextPage}
-              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-              title="الصفحة التالية"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => goToPage(totalPages)}
-              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-              title="الصفحة الأخيرة"
-            >
-              <SkipForward className="h-5 w-5" />
-            </button>
-          </div>
-          
-          {/* Fullscreen Toggle */}
-          <button
-            onClick={toggleFullScreen}
-            className="flex items-center gap-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all"
-          >
-            {isFullScreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-            <span>{isFullScreen ? "إنهاء ملء الشاشة" : "ملء الشاشة"}</span>
-          </button>
-          
-          {/* Random Thumn Button */}
-          <button
-            onClick={() => handleRandomSelection(1, 60)}
-            className="flex items-center gap-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all"
-          >
-            <Shuffle className="h-4 w-4" />
-            <span>ثُمن عشوائي</span>
-          </button>
-        </div>
-        
-        {/* Hizb Selection */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600 mb-1">الانتقال إلى الحزب</label>
-          <div className="relative">
-            <select
-              value={selectedHizb}
-              onChange={(e) => goToHizb(Number(e.target.value))}
-              className="w-full p-3 border border-gray-200 bg-white rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              {hizbData.map((hizb) => (
-                <option key={hizb.hizb} value={hizb.hizb}>
-                  الحزب {hizb.hizb} - صفحة {hizb.startPage}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3 text-gray-500">
-              <ChevronLeft className="h-4 w-4" />
-            </div>
-          </div>
-        </div>
-        
-        {/* Quick Navigation - Visual Hizb Grid */}
-        <div className="mt-6">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">انتقال سريع للأحزاب</h3>
-          <div className="grid grid-cols-10 gap-1">
-            {Array.from({ length: 60 }, (_, i) => i + 1).map((hizbNum) => (
-              <button
-                key={hizbNum}
-                onClick={() => goToHizb(hizbNum)}
-                className={`p-1 text-xs rounded ${
-                  selectedHizb === hizbNum
-                    ? "bg-emerald-600 text-white"
-                    : "bg-gray-100 hover:bg-emerald-100 text-gray-700"
-                }`}
-              >
-                {hizbNum}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-        {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-xl max-w-4xl w-full mx-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold font-arabic text-emerald-600">
-          اختيار ثُمن عشوائي
-        </h2>
-        <button
-          onClick={() => setIsModalOpen(false)}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          ✕
-        </button>
-      </div>
-
-      {/* تصفية حسب النطاق */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4">اختر نطاق الأحزاب:</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-          {categories.map((category) => (
-            <button
-              key={category.name}
-              onClick={() => handleRandomSelection(category.minHizb, category.maxHizb)}
-              className={`p-2 rounded-lg text-sm transition-all duration-300 ${
-                selectedCategory === `${category.minHizb}-${category.maxHizb}`
-                  ? "bg-emerald-600 text-white"
-                  : "bg-white border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
-        {/* نطاق مخصص */}
-        <div className="flex justify-center gap-4 items-center mt-10">
-          <div className="flex items-center gap-2">
-            <label className="text-sm">من الحزب:</label>
-            <input
-              type="number"
-              min="1"
-              max="60"
-              value={customRange.min}
-              onChange={(e) => setCustomRange(prev => ({ ...prev, min: parseInt(e.target.value) }))}
-              className="w-20 p-2 border rounded"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm">إلى الحزب:</label>
-            <input
-              type="number"
-              min="1"
-              max="60"
-              value={customRange.max}
-              onChange={(e) => setCustomRange(prev => ({ ...prev, max: parseInt(e.target.value) }))}
-              className="w-20 p-2 border rounded"
-            />
-          </div>
-          <button
-            onClick={handleCustomRangeSelect}
-            className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-          >
-            اختيار
-          </button>
-        </div>
-      </div>
-
-      {/* عرض الثمن المختار */}
-      {selectedThumn && (
-        <div className="text-center mb-6">
-          <p className="text-3xl font-bold text-gray-800 mb-4">
-            الحزب {selectedThumn.hizb} - الثمن {selectedThumn.name}
-          </p>
-          <p className="text-xl text-gray-600 mb-4">
-            الصفحة {selectedThumn.page}
-          </p>
-          
-          <button
-            onClick={() => setShowThumnImage(!showThumnImage)}
-            className="flex items-center gap-2 mx-auto px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-          >
-            <Book className="h-5 w-5" />
-            {showThumnImage ? "إخفاء" : "عرض"} آيات الثمن
-          </button>
-        </div>
-      )}
-
-      {/* عرض صورة الثمن */}
-      {showThumnImage && currentThumn && (
-        <div className="mt-6">
-          <Image
-            src={`/thumns/thumn-${getThumnImageName(currentThumn+1)}.png`}
-            alt={`ثمن ${currentThumn}`}
-            width={600}
-            height={400}
-            className="rounded-lg shadow-xl border-2 border-gray-200 mx-auto"
-            priority
-          />
-        </div>
-      )}
-
-      {/* أزرار التحكم */}
-      <div className="flex justify-center gap-4 mt-6">
-        <button
-          onClick={goToThumnPage}
-          className="px-6 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-        >
-          انتقال للصفحة
-        </button>
-      </div>
+      <ControlPanel
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+        totalPages={totalPages}
+        goToPrevPage={goToPrevPage}
+        goToNextPage={goToNextPage}
+        goToPage={goToPage}
+        toggleFullScreen={toggleFullScreen}
+        isFullScreen={isFullScreen}
+        handleRandomSelection={handleRandomSelection}
+        selectedHizb={selectedHizb}
+        goToHizb={goToHizb}
+        hizbData={hizbData}
+        toggleThumnPanel={toggleThumnPanel}
+        showThumnPanel={showThumnPanel}
+      />
     </div>
-  </div>
-)}
-      </div>
-  
   );
 };
 

@@ -1,7 +1,8 @@
 "use client";
 
+
+import FlipBook from "@/components/FlipBookTest";
 // import FlipBook from "@/components/FlipBookTest";
-import { ThumnSelector } from "@/components/ThumnSelector";
 import { Suspense } from "react";
 // import { useSearchParams } from "next/navigation";
 
@@ -22,6 +23,7 @@ export default function ClientContent() {
 
   return <Suspense fallback={<div>Loading...</div>}>
 
-    <ThumnSelector/>
+<FlipBook />
+    
   </Suspense>;
 }
