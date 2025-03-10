@@ -80,7 +80,10 @@ export const ThumnPanel: React.FC<ThumnPanelProps> = ({
               min="1"
               max="60"
               value={customRange.min}
-              onChange={(e) => setCustomRange((prev) => ({ ...prev, min: Number.parseInt(e.target.value) }))}
+              onChange={(e) => setCustomRange({ 
+                ...customRange, 
+                min: Number.parseInt(e.target.value) 
+              })}
               className="w-full p-2 border rounded text-center bg-white"
             />
           </div>
@@ -91,7 +94,10 @@ export const ThumnPanel: React.FC<ThumnPanelProps> = ({
               min="1"
               max="60"
               value={customRange.max}
-              onChange={(e) => setCustomRange((prev) => ({ ...prev, max: Number.parseInt(e.target.value) }))}
+              onChange={(e) => setCustomRange({ 
+                ...customRange, 
+                min: Number.parseInt(e.target.value) 
+              })}
               className="w-full p-2 border rounded text-center bg-white"
             />
           </div>

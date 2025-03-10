@@ -1,20 +1,11 @@
 /* eslint-disable */
 "use client";
-import Image from "next/image";
+
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
 import LazyImage from "./LazyImage";
-import { getQuarterPages } from "@/types/quran_hizb_pages";
 import {
-  Book,
-  ChevronLeft,
-  ChevronRight,
-  Maximize,
   Minimize,
-  Search,
-  SkipBack,
-  SkipForward,
-  Shuffle,
   X,
 } from "lucide-react";
 import { ControlPanel } from "./quran/control-panel";
