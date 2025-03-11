@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
-        className={`text-right bg-[#FDF7E4] ${cairo.className} antialiased`}
+        className={`text-right bg-[#D4AF37] ${cairo.className} antialiased`}
       >
         <div className="flex min-h-screen">
           <div className="flex-1 flex flex-col">
@@ -68,14 +68,7 @@ export default function RootLayout({
               </div>
             </header>
 
-            {/* Main content area with cream background */}
-            <main className="flex-1 p-6 bg-gradient-to-b from-[#FDF7E4] to-[#F5E6CA]">
-              <div className="max-w-7xl mx-auto">
-                <div className="bg-white rounded-xl shadow-lg border border-[#D4AF37]/20 p-6">
-                  {children}
-                </div>
-              </div>
-            </main>
+            {children}
           </div>
         </div>
       </body>

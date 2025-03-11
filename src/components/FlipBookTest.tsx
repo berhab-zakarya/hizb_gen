@@ -638,6 +638,10 @@ const FlipBook = () => {
   const [customRange, setCustomRange] = useState({ min: 1, max: 60 });
   const [showThumnPanel, setShowThumnPanel] = useState(false);
   const [bookSize, setBookSize] = useState({ width: 400, height: 600 });
+  const [zoomLevel, setZoomLevel] = useState(1.0); // Default zoom level is 1.0 (100%)
+  const MIN_ZOOM = 0.5; // Minimum zoom level (50%)
+  const MAX_ZOOM = 2.0; // Maximum zoom level (200%)
+  const ZOOM_STEP = 0.1; 
 
   const toggleThumnPanel = () => {
     setShowThumnPanel(!showThumnPanel);
@@ -857,15 +861,15 @@ const FlipBook = () => {
 
           // Force a large fixed size based on screen orientation
           let width, height;
-
+          const aspectRatio = 3 / 4; 
           if (screenWidth > screenHeight) {
             // Landscape orientation - make book wider
-            width = Math.min(600, screenWidth * 0.35); // Much larger fixed width
-            height = Math.min(800, screenHeight * 0.85); // Fixed height
+            height = screenHeight * 0.85; // Use 85% of screen height
+            width = height * (2/3); // Fixed height
           } else {
             // Portrait orientation
-            width = Math.min(500, screenWidth * 0.45);
-            height = Math.min(700, screenHeight * 0.75);
+            width = screenWidth * 0.8; // Use 80% of screen width
+          height = width / (2/3);
           }
 
           console.log(
@@ -1045,9 +1049,9 @@ const FlipBook = () => {
     <div
       ref={containerRef}
       dir="rtl"
-      className="flex flex-col items-center p-4 bg-white min-h-screen relative"
+      className="flex flex-col w-full items-center p-4 bg-white min-h-screen relative"
     >
-      <div className="flex w-full max-w-7xl justify-between items-start gap-4">
+      <div className="flex w-full  justify-between items-start gap-4">
         {/* Thumn Panel - Integrated directly into the layout */}
         {showThumnPanel && (
           <div className="thumn-panel bg-white border border-emerald-100 rounded-xl shadow-lg p-4 w-80 max-h-[80vh] overflow-y-auto">
@@ -1115,7 +1119,7 @@ const FlipBook = () => {
             maxShadowOpacity={0.5}
             style={{
               margin: 0,
-              // Add a transition for smoother size changes
+     
               transition: "width 0.3s, height 0.3s",
             }}
             size="fixed"
@@ -1161,6 +1165,7 @@ const FlipBook = () => {
                     alt={`صفحة ${actualPageNumber}`}
                     width={bookSize.width}
                     height={bookSize.height}
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
                     priority={shouldPreload}
                     onLoad={() => handleImageLoad(index)}
                   />
