@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
 
-import Sidebar from "@/components/Sidebar";
-import Image from "next/image";
+
 
 const cairo = Cairo({ subsets: ["latin"] });
 
@@ -36,41 +35,14 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
-        className={`text-right bg-gray-100 dark:bg-gray-900 ${cairo.className} antialiased`}
+        className={`text-right bg-[#D4AF37] ${cairo.className} antialiased`}
       >
         <div className="flex min-h-screen">
-          {/* الشريط الجانبي */}
-
           <div className="flex-1 flex flex-col">
-            {/* الهيدر مع الشعار */}
+            {/* Header with luxurious styling */}
+          
 
-            <header className="bg-white dark:bg-gray-800 shadow-md py-3 px-4 flex items-center justify-between">
-             
-
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/logo.png"
-                  width={100}
-                  height={50}
-                  alt="شعار الجمعية"
-                  className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
-                />
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100 leading-tight">
-                    منصة مسار الأثمان
-                  </h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">
-                    اختيار عشوائي لأثمان القرآن برواية ورش عن نافع
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex-none ml-2">
-                <Sidebar />
-              </div>
-            </header>
-            {/* المحتوى */}
-            <main className="p-6 flex-1">{children}</main>
+            {children}
           </div>
         </div>
       </body>

@@ -6,11 +6,12 @@ interface LazyImageProps {
   alt: string;
   width: number;
   height: number;
+  style?: React.CSSProperties;
   priority?: boolean;
   onLoad?: () => void;
 }
 
-const LazyImage = ({ src, alt, width, height, priority = false, onLoad }: LazyImageProps) => {
+const LazyImage = ({ src, alt, width,height ,style, priority = false, onLoad }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -23,6 +24,7 @@ const LazyImage = ({ src, alt, width, height, priority = false, onLoad }: LazyIm
         alt={alt}
         width={width}
         height={height}
+        style={style}
         className={`w-full h-full object-contain transition-opacity duration-300 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
