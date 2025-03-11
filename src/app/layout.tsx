@@ -41,32 +41,7 @@ export default function RootLayout({
         <div className="flex min-h-screen">
           <div className="flex-1 flex flex-col">
             {/* Header with luxurious styling */}
-            <header className="bg-gradient-to-b from-[#D4AF37] to-[#B08F26] shadow-lg py-4 px-6">
-              <div className="max-w-7xl mx-auto">
-                <div className="flex items-center gap-6">
-                  {/* Logo container with golden border */}
-                  <div className="bg-white p-2 rounded-lg shadow-md border-2 border-[#D4AF37]">
-                    <Image
-                      src="/logo.png"
-                      width={100}
-                      height={50}
-                      alt="شعار الجمعية"
-                      className="w-16 h-16 object-contain"
-                    />
-                  </div>
-
-                  {/* Title container */}
-                  <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-white leading-tight">
-                      جمعية القيم للتربية والثقافة والعلم-مغنية
-                    </h1>
-                    <p className="text-[#FDF7E4] text-lg mt-1 leading-relaxed">
-                      برنامج المسابقات القرٱنية
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </header>
+          
 
             {children}
           </div>
