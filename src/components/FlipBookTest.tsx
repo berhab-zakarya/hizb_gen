@@ -1112,10 +1112,10 @@ const FlipBook = () => {
         <img
           src="/logo.png"
           alt="شعار الجمعية"
-          className="h-8 w-8 object-contain"
+          className="h-12 w-12 object-contain mt-0"
         />
         <div className="hidden md:flex flex-col items-end">
-          <h1 className="text-[#D4AF37] font-bold text-lg">ss
+          <h1 className="text-[#D4AF37] font-bold text-lg">
             جمعية القيم للتربية والثقافة والعلم-مغنية
           </h1>
           <h2 className="text-[#D4AF37] text-sm">برنامج المسابقات القرٱنية</h2>
