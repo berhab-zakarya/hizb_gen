@@ -5,8 +5,12 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
 import LazyImage from "./LazyImage";
 import {
-  Minimize,
   X,
+  ChevronLeft,
+  ChevronRight,
+  Minimize,
+  Maximize,
+  Book,
 } from "lucide-react";
 import { ControlPanel } from "./quran/control-panel";
 import { ThumnPanel } from "./quran/thumn-panel";
@@ -641,7 +645,25 @@ const FlipBook = () => {
   const [zoomLevel, setZoomLevel] = useState(1.0); // Default zoom level is 1.0 (100%)
   const MIN_ZOOM = 0.5; // Minimum zoom level (50%)
   const MAX_ZOOM = 2.0; // Maximum zoom level (200%)
-  const ZOOM_STEP = 0.1; 
+  const ZOOM_STEP = 0.1;
+
+  const [showHizbMenu, setShowHizbMenu] = useState(false);
+
+  const zoomIn = () => {
+    if (zoomLevel < MAX_ZOOM) {
+      setZoomLevel((prev) => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+    }
+  };
+
+  const zoomOut = () => {
+    if (zoomLevel > MIN_ZOOM) {
+      setZoomLevel((prev) => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+    }
+  };
+
+  const resetZoom = () => {
+    setZoomLevel(1.0);
+  };
 
   const toggleThumnPanel = () => {
     setShowThumnPanel(!showThumnPanel);
@@ -655,14 +677,14 @@ const FlipBook = () => {
   // دالة للانتقال إلى صفحة الثمن المختار
   const goToThumnPage = () => {
     if (currentThumn) {
-      const thumn = thumnData.find(t => t.thumn === currentThumn);
+      const thumn = thumnData.find((t) => t.thumn === currentThumn);
       if (thumn) {
         const targetPage = thumn.startPage;
         console.log("Going to thumn page:", targetPage);
-  
+
         // Calculate the correct flip index
         const flipIndex = totalPages - targetPage;
-        
+
         try {
           if (flipBookRef.current) {
             // Try the navigation
@@ -696,22 +718,23 @@ const FlipBook = () => {
     setIsLoading(true);
     setShowThumnImage(false);
     setSelectedCategory(`${minHizb}-${maxHizb}`);
-  
+
     setTimeout(() => {
       // Calculate thumn range based on hizb range
       const minThumn = (minHizb - 1) * 8 + 1;
       const maxThumn = maxHizb * 8;
-      
+
       // Generate random thumn number within range
-      const randomThumnNumber = Math.floor(Math.random() * (maxThumn - minThumn + 1)) + minThumn;
-      
+      const randomThumnNumber =
+        Math.floor(Math.random() * (maxThumn - minThumn + 1)) + minThumn;
+
       // Find the thumn data
-      const thumn = thumnData.find(t => t.thumn === randomThumnNumber);
-      
+      const thumn = thumnData.find((t) => t.thumn === randomThumnNumber);
+
       if (thumn) {
         const hizbNumber = Math.ceil(randomThumnNumber / 8);
         const thumnInHizb = ((randomThumnNumber - 1) % 8) + 1;
-  
+
         setSelectedThumn({
           name: thumnInHizb.toString(),
           page: thumn.startPage,
@@ -720,7 +743,7 @@ const FlipBook = () => {
         setCurrentThumn(randomThumnNumber);
         setIsModalOpen(true);
       }
-      
+
       setIsLoading(false);
     }, 700);
   };
@@ -762,6 +785,24 @@ const FlipBook = () => {
 
     updateVisibleRange();
   }, [pageNumber, totalPages]);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "F11") {
+        // تأخير قليل للسماح للمتصفح بإكمال عملية ملء الشاشة
+        setTimeout(() => {
+          const isFullscreenNow = !!document.fullscreenElement;
+          if (!isFullscreenNow) {
+            // إذا تم الخروج من وضع ملء الشاشة بواسطة F11
+            setZoomLevel(1.0); // إعادة التكبير إلى 100%
+          }
+        }, 100);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
 
   useEffect(() => {
     images.forEach((imgSrc) => {
@@ -826,7 +867,10 @@ const FlipBook = () => {
       if (bookContainerRef.current?.requestFullscreen) {
         bookContainerRef.current
           .requestFullscreen()
-          .then(() => setIsFullScreen(true))
+          .then(() => {
+            setIsFullScreen(true);
+            setZoomLevel(1.4); // تعيين مستوى التكبير إلى 140%
+          })
           .catch((err) =>
             console.error(
               `Error attempting to enable fullscreen: ${err.message}`
@@ -837,7 +881,10 @@ const FlipBook = () => {
       if (document.exitFullscreen) {
         document
           .exitFullscreen()
-          .then(() => setIsFullScreen(false))
+          .then(() => {
+            setIsFullScreen(false);
+            setZoomLevel(1.0); // إعادة مستوى التكبير إلى 100% عند الخروج من وضع ملء الشاشة
+          })
           .catch((err) =>
             console.error(`Error attempting to exit fullscreen: ${err.message}`)
           );
@@ -849,54 +896,55 @@ const FlipBook = () => {
     const updateBookSize = () => {
       if (containerRef.current) {
         if (isFullScreen) {
-          // FIXED APPROACH: Use explicit large dimensions for fullscreen
-          // Rather than calculating based on percentages
-
-          // Get screen dimensions for reference
+          // Get screen dimensions
           const screenWidth = window.innerWidth;
           const screenHeight = window.innerHeight;
-          console.log(
-            `Fullscreen dimensions - Width: ${screenWidth}, Height: ${screenHeight}`
-          );
 
-          // Force a large fixed size based on screen orientation
+          // Calculate book dimensions to fill most of the screen while maintaining aspect ratio
+          const margin = 40; // margin from screen edges
+          const availableHeight = screenHeight - margin * 2;
+          const availableWidth = screenWidth - margin * 2;
+
           let width, height;
-          const aspectRatio = 3 / 4; 
+          const aspectRatio = 0.7; // typical book page ratio (width/height)
+
           if (screenWidth > screenHeight) {
-            // Landscape orientation - make book wider
-            height = screenHeight * 0.85; // Use 85% of screen height
-            width = height * (2/3); // Fixed height
+            // Landscape mode
+            height = availableHeight;
+            width = height * aspectRatio * 2; // multiply by 2 for two pages
+
+            // Check if width is too large
+            if (width > availableWidth) {
+              width = availableWidth;
+              height = width / (aspectRatio * 2);
+            }
           } else {
-            // Portrait orientation
-            width = screenWidth * 0.8; // Use 80% of screen width
-          height = width / (2/3);
+            // Portrait mode
+            width = availableWidth;
+            height = width / aspectRatio;
+
+            // Check if height is too large
+            if (height > availableHeight) {
+              height = availableHeight;
+              width = height * aspectRatio;
+            }
           }
 
           console.log(
-            `FORCED fullscreen book size to: {width: ${width}, height: ${height}}`
+            `Fullscreen book size: {width: ${width}, height: ${height}}`
           );
-          setBookSize({ width, height });
-
-          // Explicitly style the container
-          if (bookContainerRef.current) {
-            bookContainerRef.current.style.display = "flex";
-            bookContainerRef.current.style.justifyContent = "center";
-            bookContainerRef.current.style.alignItems = "center";
-            bookContainerRef.current.style.width = "100vw";
-            bookContainerRef.current.style.height = "100vh";
-            bookContainerRef.current.style.padding = "0";
-          }
+          setBookSize({ width: width / 2, height }); // divide width by 2 for single page width
         } else {
-          // Normal mode sizing (unchanged)
+          // Normal mode sizing
           const containerWidth = containerRef.current.clientWidth;
-          const containerHeight = window.innerHeight * 0.7;
+          const containerHeight = window.innerHeight * 0.8;
 
           const availableWidth = showThumnPanel
-            ? containerWidth * 0.7
+            ? containerWidth * 0.75
             : containerWidth * 0.9;
 
-          const aspectRatio = 3 / 4;
-          let width = Math.min(availableWidth / 2, 500);
+          const aspectRatio = 0.7;
+          let width = Math.min(availableWidth / 2, 600);
           let height = width / aspectRatio;
 
           if (height > containerHeight) {
@@ -910,25 +958,31 @@ const FlipBook = () => {
       }
     };
 
-    // Run immediately when fullscreen changes
+    // Run immediately
     updateBookSize();
 
-    // Add a timeout to ensure dimensions update after fullscreen transition
+    // Add a small delay for fullscreen transition
     if (isFullScreen) {
-      const timer = setTimeout(() => {
-        console.log("Delayed fullscreen size update");
-        updateBookSize();
-      }, 500);
+      const timer = setTimeout(updateBookSize, 100);
       return () => clearTimeout(timer);
     }
 
+    // Update on resize
     window.addEventListener("resize", updateBookSize);
     return () => window.removeEventListener("resize", updateBookSize);
   }, [isFullScreen, showThumnPanel]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
+      const isFullscreenNow = !!document.fullscreenElement;
+      setIsFullScreen(isFullscreenNow);
+
+      // تعيين مستوى التكبير بناءً على حالة ملء الشاشة
+      if (isFullscreenNow) {
+        setZoomLevel(1.4); // 140% في وضع ملء الشاشة
+      } else {
+        setZoomLevel(1.0); // 100% في الوضع العادي
+      }
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -1046,27 +1100,324 @@ const FlipBook = () => {
   };
 
   return (
-    <div
-      ref={containerRef}
-      dir="rtl"
-      className="flex flex-col w-full items-center p-4 bg-white min-h-screen relative"
-    >
-      <div className="flex w-full  justify-between items-start gap-4">
-        {/* Thumn Panel - Integrated directly into the layout */}
-        {showThumnPanel && (
-          <div className="thumn-panel bg-white border border-emerald-100 rounded-xl shadow-lg p-4 w-80 max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-emerald-700">
-                اختيار ثُمن
-              </h3>
-              <button
-                onClick={toggleThumnPanel}
-                className="p-1 rounded-full hover:bg-gray-100"
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
-            </div>
+    <div className="flipbook-container relative h-full overflow-hidden bg-[#F5E6CA]">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-50">
+          <div className="loading-spinner h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <span className="mr-3 text-primary">جاري التحميل...</span>
+        </div>
+      )}
 
+      <div className="fixed top-0 right-2 z-40 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-md">
+        <img
+          src="/logo.png"
+          alt="شعار الجمعية"
+          className="h-8 w-8 object-contain"
+        />
+        <div className="hidden md:flex flex-col items-end">
+          <h1 className="text-[#D4AF37] font-bold text-lg">ss
+            جمعية القيم للتربية والثقافة والعلم-مغنية
+          </h1>
+          <h2 className="text-[#D4AF37] text-sm">برنامج المسابقات القرٱنية</h2>
+        </div>
+      </div>
+
+      {isFullScreen && (
+        <button
+          className="fixed top-4 right-4 z-[9999] border p-2 rounded bg-white shadow-lg hover:bg-gray-100"
+          onClick={() => {
+            if (document.exitFullscreen) {
+              document
+                .exitFullscreen()
+                .then(() => {
+                  setIsFullScreen(false);
+                  setZoomLevel(1.0);
+                })
+                .catch((err) => console.error(err));
+            }
+          }}
+          title="خروج من وضع ملء الشاشة"
+        >
+          <Minimize className="h-5 w-5" />
+        </button>
+      )}
+
+      <div className="flex w-full h-full justify-center items-center">
+        <div className="flex-1 w-full justify-center flex flex-col h-full">
+          {/* شريط الأدوات - تم تعديله ليكون في المنتصف */}
+          <div className="flex justify-center w-full mb-2">
+            <div className="toolbar bg-[#F8F0E3] border-b border-[#D4AF37] p-2 flex flex-wrap justify-center items-center gap-2 rounded-lg mx-2">
+              <div className="flex items-center gap-2 mr-4">
+                <button
+                  className="border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={goToPrevPage}
+                  disabled={pageNumber <= 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={totalPages}
+                    value={pageNumber}
+                    onChange={(e) => {
+                      const page = parseInt(e.target.value);
+                      if (page >= 1 && page <= totalPages) {
+                        goToPage(page);
+                      }
+                    }}
+                    className="w-16 h-8 text-center border rounded border-[#D4AF37] bg-white text-[#D4AF37] hover:bg-white"
+                  />
+                  <span className="text-sm text-muted-foreground text-[#D4AF37]">
+                    من {totalPages}
+                  </span>
+                </div>
+
+                <button
+                  className="border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={goToNextPage}
+                  disabled={pageNumber >= totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={toggleFullScreen}
+                  title={isFullScreen ? "إنهاء ملء الشاشة" : "ملء الشاشة"}
+                >
+                  {isFullScreen ? (
+                    <Minimize className="h-4 w-4" />
+                  ) : (
+                    <Maximize className="h-4 w-4" />
+                  )}
+                </button>
+
+                <button
+                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={zoomOut}
+                  disabled={zoomLevel <= MIN_ZOOM}
+                  title="تصغير"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    <line x1="8" y1="11" x2="14" y2="11" />
+                  </svg>
+                </button>
+
+                <span className="text-sm text-[#D4AF37]">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+
+                <button
+                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={zoomIn}
+                  disabled={zoomLevel >= MAX_ZOOM}
+                  title="تكبير"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    <line x1="11" y1="8" x2="11" y2="14" />
+                    <line x1="8" y1="11" x2="14" y2="11" />
+                  </svg>
+                </button>
+
+                <button
+                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={resetZoom}
+                  title="إعادة تعيين التكبير"
+                >
+                  <span className="text-xs">100%</span>
+                </button>
+
+                <button
+                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  onClick={toggleThumnPanel}
+                  title="لوحة الأثمان"
+                >
+                  <Book className="h-4 w-4" />
+                </button>
+
+                <div className="relative">
+                  <button
+                    className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                    onClick={() => setShowHizbMenu(!showHizbMenu)}
+                    title="اختيار حزب"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      className="h-4 w-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      />
+                    </svg>
+                  </button>
+
+                  {showHizbMenu && (
+                    <div className="absolute top-full right-0 mt-1 bg-white border border-[#D4AF37] rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto w-64">
+                      <div className="p-2 bg-[#F8F0E3] border-b border-[#D4AF37] rounded-t-lg">
+                        <h3 className="text-center text-[#D4AF37] font-bold text-lg">
+                          اختيار الحزب
+                        </h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1 p-2">
+                        {hizbData.map((hizb) => (
+                          <button
+                            key={hizb.hizb}
+                            className="text-right px-3 py-2 hover:bg-[#F8F0E3] rounded-md text-[#8B4513] border border-[#F8F0E3] hover:border-[#D4AF37] transition-colors"
+                            onClick={() => {
+                              goToHizb(hizb.hizb);
+                              setShowHizbMenu(false);
+                            }}
+                          >
+                            <span className="font-bold">{hizb.hizb}</span>
+                            <span className="text-xs block text-gray-600">
+                              صفحة {hizb.startPage}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* حاوية الكتاب مع التكبير */}
+          <div className="flex-1 overflow-hidden w-full">
+            <div
+              ref={bookContainerRef}
+              className={
+                isFullScreen
+                  ? "fixed inset-0 z-50 bg-white flex justify-center items-center"
+                  : "w-full h-full flex justify-center items-center p-4"
+              }
+            >
+              {/* حاوية التكبير */}
+              <div
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: "center center",
+                  transition: "transform 0.3s ease",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <HTMLFlipBook
+                  ref={flipBookRef as React.RefObject<any>}
+                  width={bookSize.width}
+                  height={bookSize.height}
+                  className="quran-flipbook shadow-lg"
+                  showCover={true}
+                  startPage={images.length - 1}
+                  onFlip={handlePageFlip}
+                  flippingTime={500}
+                  usePortrait={false}
+                  maxShadowOpacity={0.5}
+                  style={{
+                    margin: 0,
+                    transition: "width 0.3s, height 0.3s",
+                  }}
+                  size="fixed"
+                  minWidth={0}
+                  maxWidth={0}
+                  minHeight={0}
+                  maxHeight={0}
+                  drawShadow={false}
+                  startZIndex={0}
+                  autoSize={false}
+                  mobileScrollSupport={true}
+                  clickEventForward={false}
+                  useMouseEvents={true}
+                  swipeDistance={0}
+                  showPageCorners={false}
+                  disableFlipByClick={true}
+                >
+                  {reversedImages.map((image, index) => {
+                    const actualPageNumber = totalPages - index;
+                    const isNearCurrent =
+                      Math.abs(index - (totalPages - pageNumber)) <=
+                      VISIBLE_PAGES;
+                    const shouldPreload =
+                      Math.abs(index - (totalPages - pageNumber)) <=
+                      PRELOAD_PAGES;
+
+                    if (!isNearCurrent && !shouldPreload) {
+                      return (
+                        <div
+                          key={index}
+                          className="quran-page bg-cream"
+                          data-page-number={actualPageNumber}
+                        />
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={index}
+                        className="quran-page bg-cream"
+                        data-page-number={actualPageNumber}
+                      >
+                        <LazyImage
+                          src={image}
+                          alt={`صفحة ${actualPageNumber}`}
+                          width={bookSize.width}
+                          height={bookSize.height}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                          }}
+                          priority={shouldPreload}
+                          onLoad={() => handleImageLoad(index)}
+                        />
+                      </div>
+                    );
+                  })}
+                </HTMLFlipBook>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {showThumnPanel && (
+          <div className="fixed top-[72px] right-4 z-50 bg-white border rounded-xl shadow-lg p-4 w-80">
             <ThumnPanel
               selectedThumn={selectedThumn}
               currentThumn={currentThumn}
@@ -1079,131 +1430,11 @@ const FlipBook = () => {
               handleCustomRangeSelect={handleCustomRangeSelect}
               goToThumnPage={goToThumnPage}
               getThumnImageName={getThumnImageName}
-              onClose={toggleThumnPanel}
+              onClose={() => setShowThumnPanel(false)}
             />
           </div>
         )}
-
-        <div
-          ref={bookContainerRef}
-          className={
-            isFullScreen
-              ? "fixed inset-0 z-50 bg-gray-900 flex justify-center items-center"
-              : "flipbook-container flex-grow flex justify-center items-center"
-          }
-          style={
-            isFullScreen
-              ? {
-                  width: "100vw",
-                  height: "100vh",
-                  padding: 0,
-                  margin: 0,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }
-              : {}
-          }
-        >
-          {/* Use the component with the proper casting to satisfy TypeScript */}
-          <HTMLFlipBook
-            ref={flipBookRef as React.RefObject<any>}
-            width={bookSize.width}
-            height={bookSize.height}
-            className="quran-flipbook shadow-lg"
-            showCover={true}
-            startPage={images.length - 1}
-            onFlip={handlePageFlip}
-            flippingTime={500}
-            usePortrait={false}
-            maxShadowOpacity={0.5}
-            style={{
-              margin: 0,
-     
-              transition: "width 0.3s, height 0.3s",
-            }}
-            size="fixed"
-            minWidth={0}
-            maxWidth={0}
-            minHeight={0}
-            maxHeight={0}
-            drawShadow={false}
-            startZIndex={0}
-            autoSize={false}
-            mobileScrollSupport={true}
-            clickEventForward={false}
-            useMouseEvents={true}
-            swipeDistance={0}
-            showPageCorners={false}
-            disableFlipByClick={true}
-          >
-            {reversedImages.map((image, index) => {
-              const actualPageNumber = totalPages - index;
-              const isNearCurrent =
-                Math.abs(index - (totalPages - pageNumber)) <= VISIBLE_PAGES;
-              const shouldPreload =
-                Math.abs(index - (totalPages - pageNumber)) <= PRELOAD_PAGES;
-
-              if (!isNearCurrent && !shouldPreload) {
-                return (
-                  <div
-                    key={index}
-                    className="quran-page bg-cream"
-                    data-page-number={actualPageNumber}
-                  />
-                );
-              }
-
-              return (
-                <div
-                  key={index}
-                  className="quran-page bg-cream"
-                  data-page-number={actualPageNumber}
-                >
-                  <LazyImage
-                    src={image}
-                    alt={`صفحة ${actualPageNumber}`}
-                    width={bookSize.width}
-                    height={bookSize.height}
-                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                    priority={shouldPreload}
-                    onLoad={() => handleImageLoad(index)}
-                  />
-                </div>
-              );
-            })}
-          </HTMLFlipBook>
-          {isFullScreen && (
-            <div className="absolute top-4 right-4 z-50">
-              <button
-                onClick={toggleFullScreen}
-                className="p-3 bg-white/80 hover:bg-white text-gray-800 rounded-full shadow-lg transition-all"
-                title="إنهاء ملء الشاشة"
-              >
-                <Minimize className="h-5 w-5" />
-              </button>
-            </div>
-          )}
-        </div>
       </div>
-
-      {/* لوحة التحكم */}
-      <ControlPanel
-        pageNumber={pageNumber}
-        setPageNumber={setPageNumber}
-        totalPages={totalPages}
-        goToPrevPage={goToPrevPage}
-        goToNextPage={goToNextPage}
-        goToPage={goToPage}
-        toggleFullScreen={toggleFullScreen}
-        isFullScreen={isFullScreen}
-        handleRandomSelection={handleRandomSelection}
-        selectedHizb={selectedHizb}
-        goToHizb={goToHizb}
-        hizbData={hizbData}
-        toggleThumnPanel={toggleThumnPanel}
-        showThumnPanel={showThumnPanel}
-      />
     </div>
   );
 };
