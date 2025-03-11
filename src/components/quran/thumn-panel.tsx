@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-import Image from "next/image"
-import { Book, Shuffle } from "lucide-react"
+
+import {  Shuffle } from "lucide-react"
 
 interface ThumnPanelProps {
   selectedThumn: { name: string; page: number; hizb: string } | null
@@ -21,16 +21,13 @@ interface ThumnPanelProps {
 
 export const ThumnPanel: React.FC<ThumnPanelProps> = ({
   selectedThumn,
-  currentThumn,
-  showThumnImage,
-  setShowThumnImage,
   selectedCategory,
   customRange,
   setCustomRange,
   handleRandomSelection,
   handleCustomRangeSelect,
   goToThumnPage,
-  getThumnImageName,
+  
 }) => {
   const categories = [
     { name: "الحزب ١-١٠", minHizb: 1, maxHizb: 10 },
@@ -127,27 +124,10 @@ export const ThumnPanel: React.FC<ThumnPanelProps> = ({
               انتقال للصفحة {selectedThumn.page}
             </button>
             
-            <button
-              onClick={() => setShowThumnImage(!showThumnImage)}
-              className="flex items-center justify-center gap-2 py-2 bg-[#FFF8E1] text-[#3D3D3D] rounded hover:bg-[#F5E6CA] transition-all"
-            >
-              <Book className="h-4 w-4" />
-              {showThumnImage ? "إخفاء" : "عرض"} آيات الثمن
-            </button>
+          
           </div>
 
-          {showThumnImage && currentThumn && (
-            <div className="mt-3 bg-white p-2 rounded border border-gray-200">
-              <Image
-                src={`/thumns/thumn-${getThumnImageName(currentThumn+1)}.png`}
-                alt={`ثمن ${currentThumn}`}
-                width={300}
-                height={200}
-                className="rounded-lg mx-auto"
-                priority
-              />
-            </div>
-          )}
+         
         </div>
       )}
     </div>

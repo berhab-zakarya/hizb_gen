@@ -1101,18 +1101,12 @@ const FlipBook = () => {
 
   return (
     <div className="flipbook-container relative h-full overflow-hidden bg-[#F5E6CA]">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-50">
-          <div className="loading-spinner h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <span className="mr-3 text-primary">جاري التحميل...</span>
-        </div>
-      )}
-
+     
       <div className="fixed top-0 right-2 z-40 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-md">
         <img
           src="/logo.png"
           alt="شعار الجمعية"
-          className="h-15 w-15 object-contain"
+          className="h-8 w-8 object-contain"
         />
         <div className="hidden md:flex flex-col items-end">
           <h1 className="text-[#D4AF37] font-bold text-lg">

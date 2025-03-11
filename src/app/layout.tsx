@@ -3,7 +3,6 @@ import { Cairo } from "next/font/google";
 import "./globals.css";
 
 
-import Image from "next/image";
 
 const cairo = Cairo({ subsets: ["latin"] });
 
