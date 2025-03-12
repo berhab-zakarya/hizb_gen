@@ -1415,7 +1415,7 @@ const FlipBook = () => {
           </div>
         )}
       </div>
-      <AboutDialog isOpen={showAbout} onClose={() => setShowAbout(false)} />
+      <AboutDialog  isOpen={showAbout} onClose={() => setShowAbout(false)} />
     </div>
   )
 };
