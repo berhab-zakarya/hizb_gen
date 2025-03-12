@@ -12,13 +12,10 @@ const AboutDialog: React.FC<AboutDialogProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 z-[100] flex justify-center items-center p-4">
-      <div className="bg-[#F5E6CA] rounded-lg shadow-xl w-full max-w-2xl relative border-2 border-[#D4AF37]">
+    <div className="fixed inset-0 bg-white bg-opacity-60 z-[100] flex justify-center items-center p-4 ">
+      <div className="bg-[#F5E6CA] rounded-lg shadow-xl w-full max-w-2xl relative border-2 border-[#D4AF37] mt-10 mb-10">
         {/* Header Bar */}
-        <div className="bg-[#D4AF37] text-white py-3 px-6 rounded-t-lg">
-          <h2 className="text-2xl font-bold text-center">حول البرنامج</h2>
-        </div>
-
+       
         {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-gray-200">
           <X className="h-6 w-6" />
