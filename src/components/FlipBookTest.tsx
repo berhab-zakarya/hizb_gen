@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { ControlPanel } from "./quran/control-panel";
 import { ThumnPanel } from "./quran/thumn-panel";
+import AboutDialog from "./AboutDialog";
 
 // Define proper types for the HTMLFlipBook component and its instance
 interface PageFlip {
@@ -648,6 +649,7 @@ const FlipBook = () => {
   const ZOOM_STEP = 0.1;
 
   const [showHizbMenu, setShowHizbMenu] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const zoomIn = () => {
     if (zoomLevel < MAX_ZOOM) {
@@ -1101,20 +1103,8 @@ const FlipBook = () => {
 
   return (
     <div className="flipbook-container relative h-full overflow-hidden bg-[#F5E6CA]">
-     
-      <div className="fixed top-0 right-2 z-40 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-md">
-        <img
-          src="/logo.png"
-          alt="شعار الجمعية"
-          className="h-8 w-8 object-contain"
-        />
-        <div className="hidden md:flex flex-col items-end">
-          <h1 className="text-[#D4AF37] font-bold text-lg">
-            جمعية القيم للتربية والثقافة والعلم-مغنية
-          </h1>
-          <h2 className="text-[#D4AF37] text-sm">برنامج المسابقات القرٱنية</h2>
-        </div>
-      </div>
+      {/* Title in the top center */}
+      
 
       {isFullScreen && (
         <button
@@ -1124,10 +1114,10 @@ const FlipBook = () => {
               document
                 .exitFullscreen()
                 .then(() => {
-                  setIsFullScreen(false);
-                  setZoomLevel(1.0);
+                  setIsFullScreen(false)
+                  setZoomLevel(1.0)
                 })
-                .catch((err) => console.error(err));
+                .catch((err) => console.error(err))
             }
           }}
           title="خروج من وضع ملء الشاشة"
@@ -1137,13 +1127,15 @@ const FlipBook = () => {
       )}
 
       <div className="flex w-full h-full justify-center items-center">
+        {" "}
+        {/* Added margin to accommodate the title */}
         <div className="flex-1 w-full justify-center flex flex-col h-full">
           {/* شريط الأدوات - تم تعديله ليكون في المنتصف */}
           <div className="flex justify-center w-full mb-2">
-            <div className="toolbar bg-[#F8F0E3] border-b border-[#D4AF37] p-2 flex flex-wrap justify-center items-center gap-2 rounded-lg mx-2">
+            <div className="toolbar bg-[#F8F0E3] border-2 border-[#D4AF37] p-2 flex flex-wrap justify-center items-center gap-2 rounded-lg mx-2 shadow-md">
               <div className="flex items-center gap-2 mr-4">
                 <button
-                  className="border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white p-2 rounded font-bold"
                   onClick={goToPrevPage}
                   disabled={pageNumber <= 1}
                 >
@@ -1157,20 +1149,18 @@ const FlipBook = () => {
                     max={totalPages}
                     value={pageNumber}
                     onChange={(e) => {
-                      const page = parseInt(e.target.value);
+                      const page = Number.parseInt(e.target.value)
                       if (page >= 1 && page <= totalPages) {
-                        goToPage(page);
+                        goToPage(page)
                       }
                     }}
-                    className="w-16 h-8 text-center border rounded border-[#D4AF37] bg-white text-[#D4AF37] hover:bg-white"
+                    className="w-16 h-8 text-center border-2 rounded border-[#D4AF37] bg-white text-[#8B4513] hover:bg-white font-bold"
                   />
-                  <span className="text-sm text-muted-foreground text-[#D4AF37]">
-                    من {totalPages}
-                  </span>
+                  <span className="text-sm text-[#8B4513] font-bold">من {totalPages}</span>
                 </div>
 
                 <button
-                  className="border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white p-2 rounded font-bold"
                   onClick={goToNextPage}
                   disabled={pageNumber >= totalPages}
                 >
@@ -1180,19 +1170,15 @@ const FlipBook = () => {
 
               <div className="flex items-center gap-2">
                 <button
-                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
                   onClick={toggleFullScreen}
                   title={isFullScreen ? "إنهاء ملء الشاشة" : "ملء الشاشة"}
                 >
-                  {isFullScreen ? (
-                    <Minimize className="h-4 w-4" />
-                  ) : (
-                    <Maximize className="h-4 w-4" />
-                  )}
+                  {isFullScreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                 </button>
 
                 <button
-                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
                   onClick={zoomOut}
                   disabled={zoomLevel <= MIN_ZOOM}
                   title="تصغير"
@@ -1214,12 +1200,10 @@ const FlipBook = () => {
                   </svg>
                 </button>
 
-                <span className="text-sm text-[#D4AF37]">
-                  {Math.round(zoomLevel * 100)}%
-                </span>
+                <span className="text-sm text-[#8B4513] font-bold">{Math.round(zoomLevel * 100)}%</span>
 
                 <button
-                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
                   onClick={zoomIn}
                   disabled={zoomLevel >= MAX_ZOOM}
                   title="تكبير"
@@ -1243,15 +1227,15 @@ const FlipBook = () => {
                 </button>
 
                 <button
-                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
                   onClick={resetZoom}
                   title="إعادة تعيين التكبير"
                 >
-                  <span className="text-xs">100%</span>
+                  <span className="text-xs font-bold">100%</span>
                 </button>
 
                 <button
-                  className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                  className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
                   onClick={toggleThumnPanel}
                   title="لوحة الأثمان"
                 >
@@ -1260,7 +1244,7 @@ const FlipBook = () => {
 
                 <div className="relative">
                   <button
-                    className="border p-2 rounded border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white p-2 rounded"
+                    className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
                     onClick={() => setShowHizbMenu(!showHizbMenu)}
                     title="اختيار حزب"
                   >
@@ -1281,32 +1265,49 @@ const FlipBook = () => {
                   </button>
 
                   {showHizbMenu && (
-                    <div className="absolute top-full right-0 mt-1 bg-white border border-[#D4AF37] rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto w-64">
-                      <div className="p-2 bg-[#F8F0E3] border-b border-[#D4AF37] rounded-t-lg">
-                        <h3 className="text-center text-[#D4AF37] font-bold text-lg">
-                          اختيار الحزب
-                        </h3>
+                    <div className="absolute top-full right-0 mt-1 bg-white border-2 border-[#D4AF37] rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto w-64">
+                      <div className="p-2 bg-[#D4AF37] border-b-2 border-[#8B4513] rounded-t-lg">
+                        <h3 className="text-center text-white font-bold text-lg">اختيار الحزب</h3>
                       </div>
                       <div className="grid grid-cols-2 gap-1 p-2">
                         {hizbData.map((hizb) => (
                           <button
                             key={hizb.hizb}
-                            className="text-right px-3 py-2 hover:bg-[#F8F0E3] rounded-md text-[#8B4513] border border-[#F8F0E3] hover:border-[#D4AF37] transition-colors"
+                            className="text-right px-3 py-2 hover:bg-[#F8F0E3] rounded-md text-[#8B4513] border-2 border-[#F8F0E3] hover:border-[#D4AF37] transition-colors font-bold"
                             onClick={() => {
-                              goToHizb(hizb.hizb);
-                              setShowHizbMenu(false);
+                              goToHizb(hizb.hizb)
+                              setShowHizbMenu(false)
                             }}
                           >
                             <span className="font-bold">{hizb.hizb}</span>
-                            <span className="text-xs block text-gray-600">
-                              صفحة {hizb.startPage}
-                            </span>
+                            <span className="text-xs block text-[#8B4513]">صفحة {hizb.startPage}</span>
                           </button>
                         ))}
                       </div>
                     </div>
                   )}
                 </div>
+                <button
+                  className="border-2 p-2 rounded border-[#D4AF37] text-[#8B4513] hover:bg-[#D4AF37] hover:text-white font-bold"
+                  onClick={() => setShowAbout(true)}
+                  title="حول البرنامج"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -1317,7 +1318,7 @@ const FlipBook = () => {
               ref={bookContainerRef}
               className={
                 isFullScreen
-                  ? "fixed inset-0 z-50 bg-white flex justify-center items-center"
+                  ? "fixed inset-0 z-50 bg-[#F5E6CA] flex justify-center items-center"
                   : "w-full h-full flex justify-center items-center p-4"
               }
             >
@@ -1334,7 +1335,7 @@ const FlipBook = () => {
                 }}
               >
                 <HTMLFlipBook
-                  ref={flipBookRef as React.RefObject<any>}
+                  ref={flipBookRef}
                   width={bookSize.width}
                   height={bookSize.height}
                   className="quran-flipbook shadow-lg"
@@ -1364,30 +1365,16 @@ const FlipBook = () => {
                   disableFlipByClick={true}
                 >
                   {reversedImages.map((image, index) => {
-                    const actualPageNumber = totalPages - index;
-                    const isNearCurrent =
-                      Math.abs(index - (totalPages - pageNumber)) <=
-                      VISIBLE_PAGES;
-                    const shouldPreload =
-                      Math.abs(index - (totalPages - pageNumber)) <=
-                      PRELOAD_PAGES;
+                    const actualPageNumber = totalPages - index
+                    const isNearCurrent = Math.abs(index - (totalPages - pageNumber)) <= VISIBLE_PAGES
+                    const shouldPreload = Math.abs(index - (totalPages - pageNumber)) <= PRELOAD_PAGES
 
                     if (!isNearCurrent && !shouldPreload) {
-                      return (
-                        <div
-                          key={index}
-                          className="quran-page bg-cream"
-                          data-page-number={actualPageNumber}
-                        />
-                      );
+                      return <div key={index} className="quran-page bg-cream" data-page-number={actualPageNumber} />
                     }
 
                     return (
-                      <div
-                        key={index}
-                        className="quran-page bg-cream"
-                        data-page-number={actualPageNumber}
-                      >
+                      <div key={index} className="quran-page bg-cream" data-page-number={actualPageNumber}>
                         <LazyImage
                           src={image}
                           alt={`صفحة ${actualPageNumber}`}
@@ -1402,16 +1389,15 @@ const FlipBook = () => {
                           onLoad={() => handleImageLoad(index)}
                         />
                       </div>
-                    );
+                    )
                   })}
                 </HTMLFlipBook>
               </div>
             </div>
           </div>
         </div>
-
         {showThumnPanel && (
-          <div className="fixed top-[72px] right-4 z-50 bg-white border rounded-xl shadow-lg p-4 w-80">
+          <div className="fixed top-[72px] right-4 z-50 bg-white border-2 border-[#D4AF37] rounded-xl shadow-lg p-4 w-80">
             <ThumnPanel
               selectedThumn={selectedThumn}
               currentThumn={currentThumn}
@@ -1429,8 +1415,9 @@ const FlipBook = () => {
           </div>
         )}
       </div>
+      <AboutDialog isOpen={showAbout} onClose={() => setShowAbout(false)} />
     </div>
-  );
+  )
 };
 
 export default FlipBook;
